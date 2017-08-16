@@ -25,7 +25,6 @@ phases:
     commands:
       # Workaround until CodeBuild/CodePipeline retains file permissions
       - find ./infrastructure -name "*.bash" -exec chmod +x {} \;
-      - ./infrastructure/install.bash
 
   pre_build:
     commands:
