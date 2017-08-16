@@ -1,0 +1,46 @@
+# All commands below are run from root directory of repository by CodeBuild
+version: 0.2
+
+env:
+  variables:
+    TF_VAR_region: "ap-southeast-2"
+    TF_VAR_name: "codepipeline-poc-test"
+    TF_VAR_kms_key_arns: '["arn:aws:kms:ap-southeast-2:982898479788:key/0ec9686b-13a1-40fc-8256-86e8d3503e9c","arn:aws:kms:ap-southeast-2:982898479788:key/f3ccf6b7-dfc4-42d8-82f5-9e2be385f403"]'
+    TF_VAR_ssm_parameter_arns: '["arn:aws:ssm:ap-southeast-2:982898479788:parameter/codepipeline-poc/*","arn:aws:ssm:ap-southeast-2:982898479788:parameter/shared/*"]'
+    TF_VAR_build_docker_image: "jch254/docker-node-terraform-aws"
+    TF_VAR_build_docker_tag: "latest"
+    TF_VAR_buildspec: "buildspec-test.yml"
+    TF_VAR_github_repository_owner: "jch254"
+    TF_VAR_github_repository_name: "codepipeline-poc"
+    TF_VAR_github_branch_name: "master"
+    TF_VAR_dns_name: "codepipeline-poc-test.603.nu"
+    TF_VAR_route53_zone_id: "ZS32KHT5LS4PR"
+    TF_VAR_acm_arn: "arn:aws:acm:us-east-1:982898479788:certificate/2367a831-34bd-4d81-bb17-2f79d08329a6"
+    REMOTE_STATE_BUCKET: "603-terraform-remote-state"
+    DEPLOY_ENV: "test"
+
+phases:
+  install:
+    commands:
+      # Workaround until CodeBuild/CodePipeline retains file permissions
+      - find ./infrastructure -name "*.bash" -exec chmod +x {} \;
+      - ./infrastructure/install.bash
+
+  pre_build:
+    commands:
+      # Workaround until TF supports creds via Task Roles when running on ECS or CodeBuild
+      # See: https://github.com/hashicorp/terraform/issues/8746
+      - export AWS_ACCESS_KEY_ID=`curl --silent http://169.254.170.2:80$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI | jq -r '.AccessKeyId'`
+      - export AWS_SECRET_ACCESS_KEY=`curl --silent http://169.254.170.2:80$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI | jq -r '.SecretAccessKey'`
+      - export AWS_SESSION_TOKEN=`curl --silent http://169.254.170.2:80$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI | jq -r '.Token'`
+
+      - export APP_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - export TF_VAR_github_oauth_token=$(aws ssm get-parameters --region $TF_VAR_region --name "/shared/github-token" --with-decryption --query Parameters[0].Value --output text)
+
+  build:
+    commands:
+      - ./infrastructure/build-artifacts.bash
+      - ./infrastructure/run-tests.bash
+      - ./infrastructure/deploy-infrastructure.bash
+      - ./infrastructure/upload-artifacts.bash
+      - ./infrastructure/archive-artifacts.bash
