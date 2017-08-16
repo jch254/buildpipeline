@@ -19,6 +19,7 @@ env:
     TF_VAR_acm_arn: "arn:aws:acm:us-east-1:982898479788:certificate/2367a831-34bd-4d81-bb17-2f79d08329a6"
     REMOTE_STATE_BUCKET: "603-terraform-remote-state"
     DEPLOY_ENV: "production"
+    ARTIFACT_ARCHIVE_BUCKET: "codepipeline-poc-test"
 
 phases:
   install:
