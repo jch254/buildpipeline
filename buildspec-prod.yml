@@ -10,6 +10,7 @@ env:
     TF_VAR_build_docker_image: "jch254/dind-terraform-aws"
     TF_VAR_build_docker_tag: "latest"
     TF_VAR_buildspec: "buildspec-prod.yml"
+    TF_VAR_approval_sns_topic_arn: "arn:aws:sns:ap-southeast-2:982898479788:build-approvals"
     TF_VAR_github_repository_owner: "jch254"
     TF_VAR_github_repository_name: "codepipeline-poc"
     TF_VAR_github_branch_name: "production"

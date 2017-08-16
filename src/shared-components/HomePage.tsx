@@ -21,7 +21,7 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
         CodePipeline POC
       </Heading>
       <Heading size={2}>
-        AWS-powered build, test and deploy pipeline ft. multiple environments
+        AWS-powered serverless build, test and deploy pipeline ft. multiple environments
       </Heading>
     </Banner>
     <Container pb={3}>

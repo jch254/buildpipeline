@@ -2,7 +2,7 @@
 
 ### [Test env](https://codepipeline-poc-test.603.nu) | [Prod env](https://codepipeline-poc-prod.603.nu)
 
-AWS-powered build, test and deploy pipeline ft. multiple environments.
+AWS-powered serverless build, test and deploy pipeline ft. multiple environments.
 
 TODO
 
