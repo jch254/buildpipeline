@@ -1,7 +1,7 @@
 {
   "name": "codepipeline-poc",
   "version": "1.0.0",
-  "description": "AWS-powered build, test and deploy pipeline",
+  "description": "AWS-powered build, test and deploy pipeline ft. multiple environments",
   "license": "MIT",
   "scripts": {
     "dev": "ts-node server.ts",

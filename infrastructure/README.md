@@ -1,10 +1,8 @@
 # Deployment/Infrastructure
 
-CodePipeline POC is deployed to AWS on S3. CloudFront is used as a CDN. Route 53 is used for DNS. TODO
+CodePipeline POC is built, tested and deployed to AWS by CodePipeline and CodeBuild. Artifacts are served from S3. CloudFront is used as a CDN. Route 53 is used for DNS.
 
 --
-
-### Deployment Prerequisites
 
 **All commands below must be run in the /infrastructure directory.**
 
@@ -15,43 +13,49 @@ To deploy to AWS, you must:
    1. Set your credentials as the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
    1. Run `aws configure` and fill in the details it asks for.
    1. Run on an EC2 instance with an IAM Role.
-   1. Run via CodeBuild or ECS Task with an IAM Role (see [buildspec.yml](../buildspec.yml) for workaround)
+   1. Run via CodeBuild or ECS Task with an IAM Role (see [buildspec-test.yml](../buildspec-test.yml) for workaround)
 
-#### Deploying infrastructure
+### Deploying infrastructure
 
+1. Export all environment variables beginning with TF_VAR_ as per [buildspec-test.yml](../buildspec-test.yml)
 1. Initialise Terraform:
 ```
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
-  -backend-config 'key=YOUR_STATE_KEY' \
-  -backend-config 'region=YOUR_REGION'
+  -backend-config 'key=YOUR_S3_KEY' \
+  -backend-config 'region=YOUR_REGION' \
+  -get=true \
+  -upgrade=true
 ```
-1. `terraform get --update`
-1. `terraform plan -var-file your-vars.tfvars`
-1. `terraform apply -var-file your-vars.tfvars`
+1. `terraform plan -out main.tfplan`
+1. `terraform apply main.tfplan`
 
-#### Updating infrastructure
+### Updating infrastructure
 
+1. Export all environment variables beginning with TF_VAR_ as per [buildspec-test.yml](../buildspec-test.yml)
 1. Make necessary infrastructure code changes.
 1. Initialise Terraform:
 ```
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
-  -backend-config 'key=YOUR_STATE_KEY' \
-  -backend-config 'region=YOUR_REGION'
+  -backend-config 'key=YOUR_S3_KEY' \
+  -backend-config 'region=YOUR_REGION' \
+  -get=true \
+  -upgrade=true
 ```
-1. `terraform get --update`
-1. `terraform plan -var-file your-vars.tfvars`
-1. `terraform apply -var-file your-vars.tfvars`
+1. `terraform plan -out main.tfplan`
+1. `terraform apply main.tfplan`
 
-#### Destroying infrastructure (use with care)
+### Destroying infrastructure (use with care)
 
+1. Export all environment variables beginning with TF_VAR_ as per [buildspec-test.yml](../buildspec-test.yml)
 1. Initialise Terraform:
 ```
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
-  -backend-config 'key=YOUR_STATE_KEY' \
-  -backend-config 'region=YOUR_REGION'
+  -backend-config 'key=YOUR_S3_KEY' \
+  -backend-config 'region=YOUR_REGION' \
+  -get=true \
+  -upgrade=true
 ```
-1. `terraform get --update`
-1. `terraform plan -var-file your-vars.tfvars`
+1. `terraform destroy`

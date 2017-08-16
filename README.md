@@ -1,4 +1,9 @@
-# [CodePipeline POC](https://codepipeline-poc.603.nu)
+# CodePipeline POC
+
+### [Test env deploy](https://codepipeline-poc-test.603.nu)
+### [Prod env deploy](https://codepipeline-poc-prod.603.nu)
+
+AWS-powered build, test and deploy pipeline ft. multiple environments.
 
 TODO
 
