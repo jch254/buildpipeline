@@ -36,7 +36,7 @@ See [./buildspec-test.yml](./buildspec-test.yml) as an example of decrypting a s
 
 This project automatically deploys the master branch to the test environment. To deploy a new version to the production environment the master branch must be merged into a production branch. The production branch is deployed to the production environment only after it is explicitly confirmed by the required parties via a [CodePipeline approval action](http://docs.aws.amazon.com/codepipeline/latest/userguide/approvals-action-add.html). The approval action prevents accidental releases to production (e.g. someone merges master into production by accident). This is useful as the production deploy is tightly controlled - to avoid impacting users during peak hours, align releases with third parties etc. Each commit on the production branch reflects a production deploy with the commit time being the approximate time of deployment (providing the pipelines are fast enough). Approval notifications are sent out via SNS.
 
-![Approval notification](https://img.jch254.com/Approval.png)
+![Approval notification]()
 
 Different steps run in each environment by utilising separate buildspec declarations and Terraform state files per environment. Production doesn't need to build or run tests, it just needs to deploy infrastructure and artifacts.
 
