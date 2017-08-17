@@ -67,6 +67,10 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
           Check out <a href="https://github.com/jch254/buildpipeline/blob/master/README.md" target="blank" rel="noopener noreferrer">
           README.md</a> for more details.
         </p>
+
+        <p style={{ fontSize: '20px' }}>
+          This paragraph is not yet deployed to production...
+        </p>
       </Section>
     </Container>
   </div>
