@@ -11,7 +11,7 @@ const AppFooter: React.StatelessComponent<{}> = () => (
     <Space auto />
     <NavItem style={{ fontWeight: 'normal', fontSize: '12px' }}>
       <a href="https://603.nu" style={{ cusor: 'pointer', color: 'black' }}>
-        {`© 603.nu ${moment().year()}`}
+        {`SECRET: ${window.env.APP_SECRET} | © 603.nu ${moment().year()}`}
       </a>
     </NavItem>
   </Toolbar>

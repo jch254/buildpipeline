@@ -8,7 +8,8 @@
 // Example generated file:
 // window.env = {
 //   DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV)},
-//   APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)}
+//   APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)},
+//   APP_SECRET: ${JSON.stringify(process.env.APP_SECRET)}
 // }
 
 // The variables can be accessed within app code via window.env.VARIABLE_NAME

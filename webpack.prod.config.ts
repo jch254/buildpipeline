@@ -32,7 +32,8 @@ const config: webpack.Configuration = {
           return `
             window.env = {
               DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV)},
-              APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)}
+              APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)},
+              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET)}
             }
           `;
         },
@@ -69,13 +70,13 @@ const config: webpack.Configuration = {
       },
     }),
     new HtmlWebpackPlugin({
-      title: 'CodePipeline POC | 603.nu',
+      title: 'BuildPipeline | 603.nu',
       template: path.join(__dirname, 'src', 'index.ejs'),
       favicon:  path.join(__dirname, 'src', 'favicon.ico'),
       meta: [
         {
           name: 'description',
-          content: 'AWS-powered build, test and deploy pipeline',
+          content: 'AWS-powered serverless build, test and deploy pipeline ft. multiple environments',
         },
       ],
       minify: {

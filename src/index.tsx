@@ -17,6 +17,7 @@ declare global {
     env: {
       DEPLOY_ENV: string;
       APP_VERSION: string;
+      APP_SECRET: string;
     };
   }
 }
