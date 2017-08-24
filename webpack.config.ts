@@ -36,7 +36,8 @@ const config: webpack.Configuration = {
             window.env = {
               DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV)},
               APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)},
-              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET)}
+              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET)},
+              GA_ID: ${JSON.stringify(process.env.GA_ID)}
             }
           `;
         },

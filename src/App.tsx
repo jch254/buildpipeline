@@ -5,6 +5,7 @@ import { ConnectedRouter } from 'react-router-redux';
 import { Flex } from 'reflexbox';
 
 import AppFooter from './shared-components/AppFooter';
+import GaTracker from './shared-components/GaTracker';
 import HomePage from './shared-components/HomePage';
 import NotFoundPage from './shared-components/LoadableNotFoundPage';
 import ScrollToTop from './shared-components/ScrollToTop';
@@ -15,15 +16,17 @@ interface AppProps {
 
 const App: React.StatelessComponent<AppProps> = ({ history }) => (
   <ConnectedRouter history={history}>
-    <ScrollToTop>
-      <Flex column style={{ height: '100%' }}>
-        <Switch>
-          <Route path="/" exact component={HomePage} />
-          <Route component={NotFoundPage} />
-        </Switch>
-        <AppFooter />
-      </Flex>
-    </ScrollToTop>
+    <GaTracker>
+      <ScrollToTop>
+        <Flex column style={{ height: '100%' }}>
+          <Switch>
+            <Route path="/" exact component={HomePage} />
+            <Route component={NotFoundPage} />
+          </Switch>
+          <AppFooter />
+        </Flex>
+      </ScrollToTop>
+    </GaTracker>
   </ConnectedRouter>
 );
 

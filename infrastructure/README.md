@@ -21,7 +21,7 @@ The following infrastructure components should be created manually and passed to
 - ACM Certificate in US East (N. Virginia) region for CloudFront
 - build-approvals SNS topic and subscriptions
 - shared and buildpipeline KMS keys
-- shared/github-token and buildpipeline/app-secret SSM Parameter Store parameters
+- shared/github-token and buildpipeline/app-secret SSM Parameter Store parameters encrypted with the appropriate KMS key
 
 ### Initial deploy
 
