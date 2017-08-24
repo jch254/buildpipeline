@@ -37,7 +37,7 @@ phases:
       - export APP_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION
       - export TF_VAR_github_oauth_token=$(aws ssm get-parameters --region $TF_VAR_region --name "/shared/github-token" --with-decryption --query Parameters[0].Value --output text)
       - export APP_SECRET=$(aws ssm get-parameters --region $TF_VAR_region --name "/buildpipeline/app-secret" --with-decryption --query Parameters[0].Value --output text)
-      - export GA_ID=$(aws ssm get-parameters --region $TF_VAR_region --name "/buildpipeline/ga-id-prod" --with-decryption --query Parameters[0].Value --output text)
+      - export GA_ID=$(aws ssm get-parameters --region $TF_VAR_region --name "/buildpipeline/ga-id-test" --with-decryption --query Parameters[0].Value --output text)
 
   build:
     commands:
