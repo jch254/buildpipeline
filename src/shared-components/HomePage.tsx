@@ -54,8 +54,8 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
           declaration is invalid, builds might fail immediately. A YAML validator can be used to test whether a buildspec declaration
           is valid YAML. See <a href="http://docs.aws.amazon.com/codebuild/latest/userguide/concepts.html" target="_blank"
           rel="noopener noreferrer">AWS CodeBuild Concepts</a> and <a
-          href="http://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases" target="_blank">
-          Build Phase Transitions</a> for further information.
+          href="http://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases" target="_blank"
+          rel="noopener noreferrer"> Build Phase Transitions</a> for further information.
         </p>
         <p style={{ fontSize: '20px' }}>
           This project can be updated as needed to build many different types of project. If a project needs to build Docker
