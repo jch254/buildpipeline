@@ -1,6 +1,6 @@
 # BuildPipeline
 
-### [Test env](https://buildpipeline-test.603.nu) | [Production env](https://buildpipeline-prod.603.nu)
+### [Test env](https://buildpipeline-test.603.nz) | [Production env](https://buildpipeline-prod.603.nz)
 
 This project demonstrates an AWS-powered serverless build, test and deploy pipeline ft. multiple environments. The [/src](./src) directory contains a React/TypeScript/Webpack-powered web app that is served from S3 with CloudFront as a CDN and Route 53 for DNS. The [/infrastructure](./infrastructure) directory contains all infrastructure and deployment steps defined as code ([Terraform](https://www.terraform.io) and bash scripts). [CodeBuild](https://aws.amazon.com/codebuild) and [CodePipeline](https://aws.amazon.com/codepipeline) take care of building, testing and deploying the project. All build logs are stored in [CloudWatch](https://aws.amazon.com/cloudwatch). CodePipeline accesses GitHub using an access token.
 

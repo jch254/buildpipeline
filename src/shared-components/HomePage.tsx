@@ -70,8 +70,8 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
         <p style={{ fontSize: '20px' }}>
           {
             window.env.DEPLOY_ENV === 'production' ?
-              <a href="https://buildpipeline-test.603.nu">View test env</a> :
-              <a href="https://buildpipeline-prod.603.nu">View production env</a>
+              <a href="https://buildpipeline-test.603.nz">View test env</a> :
+              <a href="https://buildpipeline-prod.603.nz">View production env</a>
           }
         </p>
       </Section>

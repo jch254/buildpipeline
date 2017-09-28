@@ -71,7 +71,7 @@ const config: webpack.Configuration = {
       },
     }),
     new HtmlWebpackPlugin({
-      title: 'BuildPipeline | 603.nu',
+      title: 'BuildPipeline | 603.nz',
       template: path.join(__dirname, 'src', 'index.ejs'),
       favicon:  path.join(__dirname, 'src', 'favicon.ico'),
       meta: [
