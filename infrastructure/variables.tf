@@ -28,7 +28,7 @@ variable "buildspec" {
 
 variable "approval_sns_topic_arn" {
   description = "Approval notifications will be published to the specified SNS topic. Required if require_approval is true."
-  default = ""
+  default     = ""
 }
 
 variable "github_oauth_token" {

@@ -4,7 +4,7 @@ variable "name" {
 
 variable "log_retention" {
   description = "Specifies the number of days to retain build log events"
-  default = 90
+  default     = 90
 }
 
 variable "kms_key_arns" {
@@ -17,7 +17,7 @@ variable "ssm_parameter_arns" {
 
 variable "build_compute_type" {
   description = "CodeBuild compute type (e.g. BUILD_GENERAL1_SMALL)"
-  default = "BUILD_GENERAL1_SMALL"
+  default     = "BUILD_GENERAL1_SMALL"
 }
 
 variable "build_docker_image" {
@@ -34,17 +34,17 @@ variable "buildspec" {
 
 variable "require_approval" {
   description = "Does the pipeline require approval to run?"
-  default = "false"
+  default     = "false"
 }
 
 variable "approval_sns_topic_arn" {
   description = "Approval notifications will be published to the specified SNS topic. Required if require_approval is true."
-  default = ""
+  default     = ""
 }
 
 variable "approval_comment" {
   description = "Comment to include in approval notifications. Required if require_approval is true."
-  default = "A production deploy has been requested."
+  default     = "A production deploy has been requested."
 }
 
 variable "github_oauth_token" {
@@ -65,5 +65,5 @@ variable "github_branch_name" {
 
 variable "privileged_mode" {
   description = "If set to true, enables running the Docker daemon inside a Docker container"
-  default = "false"
+  default     = "false"
 }
