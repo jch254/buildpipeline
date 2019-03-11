@@ -44,5 +44,4 @@ phases:
 
 cache:
    paths:
-     - 'infrastructure/.terraform/modules/**/*'
      - 'infrastructure/.terraform/plugins/**/*'
