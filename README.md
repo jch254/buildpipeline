@@ -48,6 +48,10 @@ TODO!
 
 TODO
 
+## Caching
+
+If the cache_bucket variable is provided, CodeBuild will use a folder in the given bucket as a build cache. See [./buildspec-test.yml](./buildspec-test.yml) as an example of defining cache paths in a buildspec declaration.
+
 ### Using shared Terraform modules
 
 This project defines Terraform modules within the [/infrastructure](./infrastructure) directory. A good practice is to create a repository containing common infrastructure components which can be referenced and configured within other projects (e.g. web-app, rds-database, ecs-service etc.). Utilising Terraform modules to create 'building blocks' allows conventions to be enforced and standards defined for infrastructure (e.g. tags, security etc.). Modules are defined once then referenced and configured within projects using the repository URL/branch/tag/subfolder as the module source. This makes it easy for developers to define infrastructure as code within projects, achieve total ownership (provisioning and deploying as needed) and move fast. It also makes it easy to try out new concepts/ideas on isolated infrastructure. See [Standardizing Application Deployments Using Amazon ECS and Terraform](https://www.slideshare.net/AmazonWebServices/aws-reinvent-2016-gam401-riot-games-standardizing-application-deployments-using-amazon-ecs-and-terraform) for a more detailed introduction and [terraform-modules](https://github.com/jch254/terraform-modules) for an example.

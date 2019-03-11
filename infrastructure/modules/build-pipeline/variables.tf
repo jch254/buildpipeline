@@ -67,3 +67,8 @@ variable "privileged_mode" {
   description = "If set to true, enables running the Docker daemon inside a Docker container"
   default     = "false"
 }
+
+variable "cache_bucket" {
+  description = "S3 bucket to use as build cache, the value must be a valid S3 bucket name/prefix"
+  default     = ""
+}
