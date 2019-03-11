@@ -24,6 +24,7 @@ module "build_pipeline" {
   github_repository_owner = "${var.github_repository_owner}"
   github_repository_name  = "${var.github_repository_name}"
   github_branch_name      = "${var.github_branch_name}"
+  cache_bucket            = "${var.cache_bucket}"
 }
 
 module "web_app" {

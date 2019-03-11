@@ -58,3 +58,8 @@ variable "route53_zone_id" {
 variable "acm_arn" {
   description = "ARN of ACM SSL certificate"
 }
+
+variable "cache_bucket" {
+  description = "S3 bucket to use as build cache, the value must be a valid S3 bucket name/prefix"
+  default     = ""
+}
