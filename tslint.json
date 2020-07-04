@@ -1,9 +1,16 @@
 {
-  "extends": ["tslint-config-airbnb"],
+  "extends": [
+    "tslint-config-airbnb"
+  ],
   "rules": {
-    "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case"],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case"
+    ],
     "import-name": false,
-    "object-shorthand-properties-first": false,    
+    "object-shorthand-properties-first": false,
     "ordered-imports": [
       true,
       {

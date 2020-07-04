@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "apex_bucket" {
-  bucket        = "${var.dns_name}"
+  bucket        = var.dns_name
   acl           = "public-read"
   force_destroy = true
 
@@ -25,7 +25,7 @@ POLICY
 
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
-    domain_name = "${aws_s3_bucket.apex_bucket.website_endpoint}"
+    domain_name = aws_s3_bucket.apex_bucket.website_endpoint
     origin_id   = "apex_bucket_origin"
 
     custom_origin_config {
@@ -37,7 +37,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   enabled = true
-  aliases = ["${var.dns_name}"]
+  aliases = [var.dns_name]
 
   custom_error_response {
     error_code         = "404"
@@ -69,7 +69,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = "${var.acm_arn}"
+    acm_certificate_arn      = var.acm_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
@@ -82,13 +82,13 @@ resource "aws_cloudfront_distribution" "cdn" {
 }
 
 resource "aws_route53_record" "apex_route53_record" {
-  zone_id = "${var.route53_zone_id}"
-  name    = "${var.dns_name}"
+  zone_id = var.route53_zone_id
+  name    = var.dns_name
   type    = "A"
 
   alias {
-    name                   = "${aws_cloudfront_distribution.cdn.domain_name}"
-    zone_id                = "${aws_cloudfront_distribution.cdn.hosted_zone_id}"
+    name                   = aws_cloudfront_distribution.cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.cdn.hosted_zone_id
     evaluate_target_health = false
   }
 }

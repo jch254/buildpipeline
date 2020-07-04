@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_log_group" "codebuild_lg" {
   name              = "/aws/codebuild/${var.name}"
-  retention_in_days = "${var.log_retention}"
+  retention_in_days = var.log_retention
 }
 
 resource "aws_iam_role" "codebuild_role" {
@@ -25,42 +25,42 @@ EOF
 data "template_file" "codebuild_policy" {
   template = "${file("${path.module}/codebuild-role-policy.tpl")}"
 
-  vars {
-    kms_key_arns       = "${var.kms_key_arns}"
-    ssm_parameter_arns = "${var.ssm_parameter_arns}"
+  vars = {
+    kms_key_arns       = var.kms_key_arns
+    ssm_parameter_arns = var.ssm_parameter_arns
   }
 }
 
 resource "aws_iam_role_policy" "codebuild_policy" {
   name   = "${var.name}-codebuild-policy"
-  role   = "${aws_iam_role.codebuild_role.id}"
-  policy = "${data.template_file.codebuild_policy.rendered}"
+  role   = aws_iam_role.codebuild_role.id
+  policy = data.template_file.codebuild_policy.rendered
 }
 
 resource "aws_codebuild_project" "codebuild_project" {
-  name         = "${var.name}"
+  name         = var.name
   description  = "Builds, tests and deploys ${var.name}"
-  service_role = "${aws_iam_role.codebuild_role.arn}"
+  service_role = aws_iam_role.codebuild_role.arn
 
   artifacts {
     type = "CODEPIPELINE"
   }
 
   environment {
-    compute_type    = "${var.build_compute_type}"
+    compute_type    = var.build_compute_type
     image           = "${var.build_docker_image}:${var.build_docker_tag}"
     type            = "LINUX_CONTAINER"
-    privileged_mode = "${var.privileged_mode}"
+    privileged_mode = var.privileged_mode
   }
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "${var.buildspec}"
+    buildspec = var.buildspec
   }
 
   cache {
-    type     = "${var.cache_bucket == "" ? "NO_CACHE" : "S3"}"
-    location = "${var.cache_bucket}"
+    type     = var.cache_bucket == "" ? "NO_CACHE" : "S3"
+    location = var.cache_bucket
   }
 }
 
@@ -89,8 +89,8 @@ data "template_file" "codepipeline_policy" {
 
 resource "aws_iam_role_policy" "codepipeline_policy" {
   name   = "${var.name}-codepipeline-policy"
-  role   = "${aws_iam_role.codepipeline_role.id}"
-  policy = "${data.template_file.codepipeline_policy.rendered}"
+  role   = aws_iam_role.codepipeline_role.id
+  policy = data.template_file.codepipeline_policy.rendered
 }
 
 resource "aws_s3_bucket" "artifacts" {
@@ -100,12 +100,12 @@ resource "aws_s3_bucket" "artifacts" {
 }
 
 resource "aws_codepipeline" "codepipeline" {
-  count    = "${var.require_approval == "false" ? 1 : 0}"
-  name     = "${var.name}"
-  role_arn = "${aws_iam_role.codepipeline_role.arn}"
+  count    = var.require_approval == "false" ? 1 : 0
+  name     = var.name
+  role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
-    location = "${aws_s3_bucket.artifacts.bucket}"
+    location = aws_s3_bucket.artifacts.bucket
     type     = "S3"
   }
 
@@ -120,11 +120,11 @@ resource "aws_codepipeline" "codepipeline" {
       version          = "1"
       output_artifacts = ["source"]
 
-      configuration {
-        OAuthToken = "${var.github_oauth_token}"
-        Owner      = "${var.github_repository_owner}"
-        Repo       = "${var.github_repository_name}"
-        Branch     = "${var.github_branch_name}"
+      configuration = {
+        OAuthToken = var.github_oauth_token
+        Owner      = var.github_repository_owner
+        Repo       = var.github_repository_name
+        Branch     = var.github_branch_name
       }
     }
   }
@@ -140,20 +140,20 @@ resource "aws_codepipeline" "codepipeline" {
       input_artifacts = ["source"]
       version         = "1"
 
-      configuration {
-        ProjectName = "${aws_codebuild_project.codebuild_project.name}"
+      configuration = {
+        ProjectName = aws_codebuild_project.codebuild_project.name
       }
     }
   }
 }
 
 resource "aws_codepipeline" "codepipeline_with_approval" {
-  count    = "${var.require_approval == "true" ? 1 : 0}"
-  name     = "${var.name}"
-  role_arn = "${aws_iam_role.codepipeline_role.arn}"
+  count    = var.require_approval == "true" ? 1 : 0
+  name     = var.name
+  role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
-    location = "${aws_s3_bucket.artifacts.bucket}"
+    location = aws_s3_bucket.artifacts.bucket
     type     = "S3"
   }
 
@@ -168,11 +168,11 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
       version          = "1"
       output_artifacts = ["source"]
 
-      configuration {
-        OAuthToken = "${var.github_oauth_token}"
-        Owner      = "${var.github_repository_owner}"
-        Repo       = "${var.github_repository_name}"
-        Branch     = "${var.github_branch_name}"
+      configuration = {
+        OAuthToken = var.github_oauth_token
+        Owner      = var.github_repository_owner
+        Repo       = var.github_repository_name
+        Branch     = var.github_branch_name
       }
     }
   }
@@ -187,9 +187,9 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
       provider = "Manual"
       version  = "1"
 
-      configuration {
-        NotificationArn = "${var.approval_sns_topic_arn}"
-        CustomData      = "${var.approval_comment}"
+      configuration = {
+        NotificationArn = var.approval_sns_topic_arn
+        CustomData      = var.approval_comment
       }
     }
   }
@@ -205,8 +205,8 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
       input_artifacts = ["source"]
       version         = "1"
 
-      configuration {
-        ProjectName = "${aws_codebuild_project.codebuild_project.name}"
+      configuration = {
+        ProjectName = aws_codebuild_project.codebuild_project.name
       }
     }
   }

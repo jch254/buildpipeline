@@ -26,7 +26,7 @@ const server = new WebpackDevServer(compiler, {
   },
 });
 
-server.listen(SERVER_PORT, SERVER_HOSTNAME, (err: Error) => {
+server.listen(SERVER_PORT, SERVER_HOSTNAME, (err?: Error) => {
   if (err) {
     console.log(err);
   }
