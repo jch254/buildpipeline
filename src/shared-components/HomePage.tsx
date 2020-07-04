@@ -14,15 +14,15 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
       <Heading textAlign="center" color="white" fontSize={8}>
         BuildPipeline
       </Heading>
-      <Subhead>
+      <Subhead fontSize={4}>
         AWS-powered serverless build, test and deploy pipeline ft. multiple environments
       </Subhead>
-      <Subhead size={4} pt={2}>
+      <Subhead fontSize={2} pt={3}>
         {`ENV: ${window.env.DEPLOY_ENV} | VERSION: ${window.env.APP_VERSION}`}
       </Subhead>
     </Banner>
     <Container p={4}>
-      <Heading size={2}>Overview</Heading>
+      <Heading pt={4} size={2}>Overview</Heading>
       <p style={{ fontSize: '20px' }}>
         This project demonstrates an AWS-powered serverless build, test and deploy pipeline ft. multiple environments.
         The /src directory contains a React/TypeScript/Webpack-powered web app that is served from S3
