@@ -17,7 +17,7 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
       <Subhead textAlign="center" color="white" fontSize={[2, 4]}>
         AWS-powered serverless build, test and deploy pipeline ft. multiple environments
       </Subhead>
-      <Subhead fontSize={[1, 2]} pt={3}>
+      <Subhead textAlign="center" color="white" fontSize={[1, 2]} pt={3}>
         {`ENV: ${window.env.DEPLOY_ENV} | VERSION: ${window.env.APP_VERSION}`}
       </Subhead>
     </Banner>
