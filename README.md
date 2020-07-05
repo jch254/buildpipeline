@@ -48,7 +48,7 @@ TODO!
 
 ## Build notifications
 
-AWS [provides instructions](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html) on setting up build notifications with CloudWatch Events and SNS to send build notifications to subscribers whenever builds succeed, fail, go from one build phase to another, or any combination of these events. For more detailed notifications a Lambda function can be used (e.g. including commit details, sending data to a webhook etc.). 
+AWS [provides instructions](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html) on setting up build notifications with CloudWatch Events and SNS to send build notifications to subscribers whenever builds succeed, fail, go from one build phase to another, or any combination of these events. For more detailed notifications a Lambda function can be used (e.g. including commit details, sending data to a webhook etc.).
 
 ## Caching
 

@@ -11,13 +11,13 @@ const HomePage: React.StatelessComponent<RouteComponentProps<any>> = () => (
       backgroundImage={`url(${banner})`}
       m={0}
     >
-      <Heading textAlign="center" color="white" fontSize={8}>
+      <Heading textAlign="center" color="white" fontSize={[6, 8]}>
         BuildPipeline
       </Heading>
-      <Subhead fontSize={4}>
+      <Subhead textAlign="center" color="white" fontSize={[2, 4]}>
         AWS-powered serverless build, test and deploy pipeline ft. multiple environments
       </Subhead>
-      <Subhead fontSize={2} pt={3}>
+      <Subhead fontSize={[1, 2]} pt={3}>
         {`ENV: ${window.env.DEPLOY_ENV} | VERSION: ${window.env.APP_VERSION}`}
       </Subhead>
     </Banner>
