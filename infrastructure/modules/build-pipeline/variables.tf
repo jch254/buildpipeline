@@ -72,3 +72,23 @@ variable "cache_bucket" {
   description = "S3 bucket to use as build cache, the value must be a valid S3 bucket name/prefix"
   default     = ""
 }
+
+variable "image_pull_credentials_type" {
+  description = "The type of credentials AWS CodeBuild uses to pull images in the build. Valid values for this parameter are: CODEBUILD or SERVICE_ROLE."
+  default     = "CODEBUILD"
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC within which to run builds"
+  default     = ""
+}
+
+variable "subnet_ids" {
+  description = "List of subnet IDs within which to run builds"
+  default     = []
+}
+
+variable "security_group_ids" {
+  description = "List of security group IDs to assign to running builds"
+  default     = []
+}

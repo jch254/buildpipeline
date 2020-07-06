@@ -13,7 +13,7 @@ To deploy to AWS, you must:
 
 --
 
-### Manually created components
+## Manually created components
 
 The following infrastructure components should be created manually and passed to Terraform via the appropriate variables in the appropriate buildspec declaration:
 
@@ -23,7 +23,7 @@ The following infrastructure components should be created manually and passed to
 - shared and buildpipeline KMS keys
 - shared/github-token and buildpipeline/app-secret SSM Parameter Store parameters encrypted with the appropriate KMS key
 
-### Initial deploy
+## Initial deploy
 
 There is a chicken and egg situation - CodeBuild and CodePipeline will eventually build, test and deploy the project but this can only happen after the CodeBuild and CodePipeline projects have been created. Terraform needs to be run initially to create the CodeBuild and CodePipeline projects in each account/environment. CodeBuild and CodePipeline will then build, test and deploy every commit on the specified branch of the GitHub repo.
 
@@ -34,7 +34,7 @@ There is a chicken and egg situation - CodeBuild and CodePipeline will eventuall
 
 Exporting the environment variables specified in a buildspec declaration is tedious and time-consuming. The bash script below utilises a YAML parser called [shyaml](https://github.com/0k/shyaml) and automates the process (shyaml must be installed before using). Environment variables specified in buildspec phases or bash scripts will still need to be exported manually.
 
-```
+```sh
 export $(
   cat BUILDSPEC_FILE_PATH |
   shyaml get-values-0 env.variables |
@@ -46,11 +46,12 @@ export $(
 
 **All commands below must be run in the /infrastructure directory.**
 
-### Manually deploying infrastructure
+## Manually deploying infrastructure
 
 1. Update and export all environment variables specified in the appropriate buildspec declaration (check all phases) and bash scripts
 1. Initialise Terraform:
-```
+
+```terraform
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
   -backend-config 'key=YOUR_S3_KEY' \
@@ -58,15 +59,17 @@ terraform init \
   -get=true \
   -upgrade=true
 ```
+
 1. `terraform plan -out main.tfplan`
 1. `terraform apply main.tfplan`
 
-### Manually updating infrastructure
+## Manually updating infrastructure
 
 1. Update and export all environment variables specified in the appropriate buildspec declaration (check all phases) and bash scripts
 1. Make necessary infrastructure code changes.
 1. Initialise Terraform:
-```
+
+```terraform
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
   -backend-config 'key=YOUR_S3_KEY' \
@@ -74,14 +77,16 @@ terraform init \
   -get=true \
   -upgrade=true
 ```
+
 1. `terraform plan -out main.tfplan`
 1. `terraform apply main.tfplan`
 
-### Manually destroying infrastructure (use with care)
+## Manually destroying infrastructure (use with care)
 
 1. Update and export all environment variables specified in the appropriate buildspec declaration (check all phases) and bash scripts
 1. Initialise Terraform:
-```
+
+```terraform
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
   -backend-config 'key=YOUR_S3_KEY' \
@@ -89,4 +94,5 @@ terraform init \
   -get=true \
   -upgrade=true
 ```
+
 1. `terraform destroy`

@@ -1,5 +1,12 @@
 # Web-app
 
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| aws | ~> 2.0 |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -12,5 +19,5 @@
 
 | Name | Description |
 |------|-------------|
-| cloudfront\_distribution\_id |  |
-| s3\_bucket\_id |  |
+| cloudfront\_distribution\_id | n/a |
+| s3\_bucket\_id | n/a |
