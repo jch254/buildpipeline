@@ -5,7 +5,6 @@
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12 |
-| aws | ~> 2.0 |
 
 ## Inputs
 
