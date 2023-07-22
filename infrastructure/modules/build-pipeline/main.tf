@@ -38,6 +38,7 @@ resource "aws_iam_role_policy" "codebuild_policy" {
 }
 
 resource "aws_codebuild_project" "codebuild_project" {
+  count        = var.vpc_id == "" ? 1 : 0
   name         = var.name
   description  = "Builds, tests and deploys ${var.name}"
   service_role = aws_iam_role.codebuild_role.arn
@@ -47,10 +48,11 @@ resource "aws_codebuild_project" "codebuild_project" {
   }
 
   environment {
-    compute_type    = var.build_compute_type
-    image           = "${var.build_docker_image}:${var.build_docker_tag}"
-    type            = "LINUX_CONTAINER"
-    privileged_mode = var.privileged_mode
+    compute_type                = var.build_compute_type
+    image                       = "${var.build_docker_image}:${var.build_docker_tag}"
+    type                        = "LINUX_CONTAINER"
+    privileged_mode             = var.privileged_mode
+    image_pull_credentials_type = var.image_pull_credentials_type
   }
 
   source {
@@ -61,6 +63,42 @@ resource "aws_codebuild_project" "codebuild_project" {
   cache {
     type     = var.cache_bucket == "" ? "NO_CACHE" : "S3"
     location = var.cache_bucket
+  }
+}
+
+
+resource "aws_codebuild_project" "codebuild_project_in_vpc" {
+  count        = var.vpc_id != "" ? 1 : 0
+  name         = var.name
+  description  = "Builds, tests and deploys ${var.name}"
+  service_role = aws_iam_role.codebuild_role.arn
+
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  environment {
+    compute_type                = var.build_compute_type
+    image                       = "${var.build_docker_image}:${var.build_docker_tag}"
+    type                        = "LINUX_CONTAINER"
+    privileged_mode             = var.privileged_mode
+    image_pull_credentials_type = var.image_pull_credentials_type
+  }
+
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = var.buildspec
+  }
+
+  cache {
+    type     = var.cache_bucket == "" ? "NO_CACHE" : "S3"
+    location = var.cache_bucket
+  }
+
+  vpc_config {
+    vpc_id             = var.vpc_id
+    subnets            = var.subnet_ids
+    security_group_ids = var.security_group_ids
   }
 }
 
@@ -141,7 +179,7 @@ resource "aws_codepipeline" "codepipeline" {
       version         = "1"
 
       configuration = {
-        ProjectName = aws_codebuild_project.codebuild_project.name
+        ProjectName = var.vpc_id != "" ? aws_codebuild_project.codebuild_project_in_vpc[0].name : aws_codebuild_project.codebuild_project[0].name
       }
     }
   }
@@ -206,7 +244,7 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
       version         = "1"
 
       configuration = {
-        ProjectName = aws_codebuild_project.codebuild_project.name
+        ProjectName = var.vpc_id != "" ? aws_codebuild_project.codebuild_project_in_vpc[0].name : aws_codebuild_project.codebuild_project[0].name
       }
     }
   }
