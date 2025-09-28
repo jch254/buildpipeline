@@ -1,9 +1,31 @@
+import { ThemeProvider } from '@emotion/react';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { Provider as RebassProvider } from 'rebass';
 import App from './App';
-import configureStore, { history } from './configureStore';
+import configureStore from './configureStore';
+
+// Simple theme for rebass v4
+const theme = {
+  colors: {
+    primary: '#07c',
+    secondary: '#30c',
+    text: '#333',
+    background: '#fff',
+  },
+  fonts: {
+    body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    heading:
+      'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  },
+  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72, 96],
+  space: [0, 4, 8, 16, 32, 64, 128, 256],
+  lineHeights: {
+    solid: 1,
+    title: 1.25,
+    copy: 1.5,
+  },
+};
 
 import './index.css';
 
@@ -27,11 +49,13 @@ declare global {
   }
 }
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
+root.render(
   <Provider store={store}>
-    <RebassProvider id="provider">
-      <App history={history} />
-    </RebassProvider>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </Provider>,
-  document.getElementById('root'),
 );

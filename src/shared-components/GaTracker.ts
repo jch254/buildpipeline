@@ -1,34 +1,30 @@
 import * as React from 'react';
 import * as ga from 'react-ga';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 interface GaTrackerProps {
   children?: any;
 }
 
-type Props = GaTrackerProps & RouteComponentProps<any>;
+const GaTracker: React.FC<GaTrackerProps> = ({ children }) => {
+  const location = useLocation();
 
-class GaTracker extends React.PureComponent<Props, {}> {
-  constructor(props: Props) {
-    super(props);
-
-    if (process.env.NODE_ENV === 'production' && window.env.GA_ID !== undefined) {
-      ga.initialize(window.env.GA_ID as string);
-      ga.pageview(window.location.pathname);
+  React.useEffect(() => {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      window.env.GA_ID !== undefined
+    ) {
+      ga.initialize(window.env.GA_ID);
     }
-  }
+  }, []);
 
-  componentDidUpdate(prevProps: Props) {
-    if (process.env.NODE_ENV === 'production' && this.props.location !== prevProps.location) {
-      ga.pageview(window.location.pathname);
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      ga.pageview(location.pathname);
     }
-  }
+  }, [location]);
 
-  render() {
-    const { children } = this.props;
+  return children;
+};
 
-    return children;
-  }
-}
-
-export default withRouter<Props, typeof GaTracker>(GaTracker);
+export default GaTracker;

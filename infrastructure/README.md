@@ -36,11 +36,11 @@ Exporting the environment variables specified in a buildspec declaration is tedi
 
 ```sh
 export $(
-  cat BUILDSPEC_FILE_PATH |
-  shyaml get-values-0 env.variables |
-  while IFS='' read -r -d '' key && IFS='' read -r -d '' value; do
-    echo $key=$value
-  done
+  cat BUILDSPEC_FILE_PATH \
+    | shyaml get-values-0 env.variables \
+    | while IFS='' read -r -d '' key && IFS='' read -r -d '' value; do
+      echo $key=$value
+    done
 )
 ```
 

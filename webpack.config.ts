@@ -1,8 +1,7 @@
-import * as CopyWebpackPlugin from 'copy-webpack-plugin';
-import * as HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as InlineManifestWebpackPlugin from 'inline-manifest-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as path from 'path';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -32,35 +31,38 @@ const config: webpack.Configuration = {
       },
     }),
     new CopyWebpackPlugin({
-      patterns: [{
-        from: 'env.js',
-        to: 'assets/env.js',
-        transform: (content: Buffer, path: string) => {
-          return `
+      patterns: [
+        {
+          from: 'env.js',
+          to: 'assets/env.js',
+          transform: (content: Buffer, path: string) => {
+            return `
             window.env = {
-              DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV)},
-              APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)},
-              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET)},
-              GA_ID: ${JSON.stringify(process.env.GA_ID)}
+              DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV || 'development')},
+              APP_VERSION: ${JSON.stringify(process.env.APP_VERSION || '1.0.0-dev')},
+              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET || 'dev-secret')},
+              GA_ID: ${JSON.stringify(process.env.GA_ID || 'GA-XXXXXXXXX-X')}
             }
           `;
+          },
         },
-      }],
+      ],
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
     new webpack.HotModuleReplacementPlugin(),
+
     new HtmlWebpackPlugin({
       title: 'BuildPipeline | 603.nz',
       template: path.join(__dirname, 'src', 'index.ejs'),
       favicon: path.join(__dirname, 'src', 'favicon.ico'),
       meta: {
-        description: 'AWS-powered serverless build, test and deploy pipeline ft. multiple environments',
+        description:
+          'AWS-powered serverless build, test and deploy pipeline ft. multiple environments',
       },
       minify: {
         collapseWhitespace: true,
       },
     }),
-    new InlineManifestWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin({
       async: false,
     }),
@@ -99,26 +101,24 @@ const config: webpack.Configuration = {
       path.join(__dirname, 'src'),
       path.join(__dirname, 'node_modules'),
     ],
+    fallback: {
+      events: require.resolve('events'),
+    },
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        enforce: 'pre',
         include: path.join(__dirname, 'src'),
-        exclude: path.join(__dirname, 'node_modules'),
-        use: ['tslint-loader'],
-      },
-      {
-        test: /\.tsx?$/,
-        include: path.join(__dirname, 'src'),
-        use: [{
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: true,
-            experimentalWatchApi: true,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              experimentalWatchApi: true,
+            },
           },
-        }],
+        ],
       },
       {
         test: /\.js$/,
@@ -147,13 +147,15 @@ const config: webpack.Configuration = {
       {
         test: /\.(jpe?g|png|gif|svg|ico)$/,
         include: path.join(__dirname, 'src'),
-        use: [{
-          loader: 'url-loader',
-          options: {
-            limit: 10240,
-            esModule: false,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10240,
+              esModule: false,
+            },
           },
-        }],
+        ],
       },
     ],
   },
