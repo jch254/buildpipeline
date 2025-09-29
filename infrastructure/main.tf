@@ -36,6 +36,33 @@ resource "aws_secretsmanager_secret_version" "dockerhub_credentials" {
   })
 }
 
+# Resource policy to allow CodeBuild to access the Docker Hub credentials
+data "aws_caller_identity" "current" {}
+
+resource "aws_secretsmanager_secret_policy" "dockerhub_credentials" {
+  count      = var.dockerhub_username != "" ? 1 : 0
+  secret_arn = aws_secretsmanager_secret.dockerhub_credentials.arn
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCodeBuildAccess"
+        Effect = "Allow"
+        Principal = {
+          Service = "codebuild.amazonaws.com"
+        }
+        Action   = "secretsmanager:GetSecretValue"
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
+}
+
 module "build_pipeline" {
   source = "./modules/build-pipeline"
 
