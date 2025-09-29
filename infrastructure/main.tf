@@ -49,15 +49,13 @@ resource "aws_secretsmanager_secret_policy" "dockerhub_credentials" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "codebuild.amazonaws.com"
+          AWS = module.build_pipeline.codebuild_role_arn
         }
-        Action = "secretsmanager:GetSecretValue"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
         Resource = aws_secretsmanager_secret.dockerhub_credentials.arn
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
-          }
-        }
       }
     ]
   })
