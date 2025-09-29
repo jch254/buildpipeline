@@ -2,9 +2,11 @@
 
 echo Fetching artifacts via AWS CLI...
 
-ARTIFACT_ARCHIVE_BUCKET=$(cd infrastructure && terraform output -raw artifacts_bucket_id)
+# Fetch from test artifacts bucket since that's where the build artifacts are stored
+TEST_ARTIFACT_BUCKET="buildpipeline-test-artifacts"
 
-aws s3 cp s3://"$ARTIFACT_ARCHIVE_BUCKET/$CODEBUILD_RESOLVED_SOURCE_VERSION".zip "$CODEBUILD_RESOLVED_SOURCE_VERSION".zip
-unzip -q "$CODEBUILD_RESOLVED_SOURCE_VERSION".zip
+# Use the latest.zip artifact which is uploaded by the test environment
+aws s3 cp s3://"$TEST_ARTIFACT_BUCKET"/latest.zip latest.zip
+unzip -q latest.zip
 
 echo Finished fetching artifacts
