@@ -20,7 +20,7 @@ env:
     TF_VAR_cache_bucket: "603-codebuild-cache/buildpipeline-prod"
     REMOTE_STATE_BUCKET: "603-terraform-remote-state"
     DEPLOY_ENV: "production"
-    ARTIFACT_ARCHIVE_BUCKET: "buildpipeline-test-artifacts"
+    ARTIFACT_ARCHIVE_BUCKET: "buildpipeline-prod-artifacts"
     APP_SECRET: "4815162342" # Could come from Parameter Store for more security
   parameter-store:
     TF_VAR_github_connection_arn: "/shared/github-connection-arn"
