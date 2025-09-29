@@ -63,3 +63,16 @@ variable "cache_bucket" {
   description = "S3 bucket to use as build cache, the value must be a valid S3 bucket name/prefix"
   default     = ""
 }
+
+variable "dockerhub_username" {
+  description = "Docker Hub username for registry authentication"
+  type        = string
+  default     = ""
+}
+
+variable "dockerhub_token" {
+  description = "Docker Hub access token for registry authentication"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
