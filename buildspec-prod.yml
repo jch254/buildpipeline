@@ -7,8 +7,8 @@ env:
     TF_VAR_name: "buildpipeline-prod"
     TF_VAR_kms_key_arns: '["arn:aws:kms:ap-southeast-2:982898479788:key/0ec9686b-13a1-40fc-8256-86e8d3503e9c","arn:aws:kms:ap-southeast-2:982898479788:key/f3ccf6b7-dfc4-42d8-82f5-9e2be385f403"]'
     TF_VAR_ssm_parameter_arns: '["arn:aws:ssm:ap-southeast-2:982898479788:parameter/buildpipeline/*","arn:aws:ssm:ap-southeast-2:982898479788:parameter/shared/*"]'
-    TF_VAR_build_docker_image: "982898479788.dkr.ecr.ap-southeast-2.amazonaws.com/dind-terraform-aws:lightweight-v1.13.3"
-    TF_VAR_build_docker_tag: "latest"
+    TF_VAR_build_docker_image: "982898479788.dkr.ecr.ap-southeast-2.amazonaws.com/dind-terraform-aws"
+    TF_VAR_build_docker_tag: "lightweight-v1.13.3"
     TF_VAR_buildspec: "buildspec-prod.yml"
     TF_VAR_approval_sns_topic_arn: "arn:aws:sns:ap-southeast-2:982898479788:build-approvals"
     TF_VAR_github_repository_owner: "jch254"
