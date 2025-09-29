@@ -35,6 +35,7 @@
     {
       "Effect": "Allow",
       "Action": [
+        "secretsmanager:DescribeSecret",
         "secretsmanager:GetSecretValue"
       ],
       "Resource": "${dockerhub_credentials_arn}"
