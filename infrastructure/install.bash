@@ -2,6 +2,6 @@
 
 echo Installing dependencies...
 
-yarn install
+pnpm install
 
 echo Finished installing dependencies
