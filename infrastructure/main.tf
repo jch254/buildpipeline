@@ -20,7 +20,7 @@ module "build_pipeline" {
   buildspec               = var.buildspec
   require_approval        = var.github_branch_name == "production" ? "true" : "false"
   approval_sns_topic_arn  = var.approval_sns_topic_arn
-  github_oauth_token      = var.github_oauth_token
+  github_connection_arn   = var.github_connection_arn
   github_repository_owner = var.github_repository_owner
   github_repository_name  = var.github_repository_name
   github_branch_name      = var.github_branch_name

@@ -8,7 +8,7 @@ env:
     TF_VAR_kms_key_arns: '["arn:aws:kms:ap-southeast-2:982898479788:key/0ec9686b-13a1-40fc-8256-86e8d3503e9c","arn:aws:kms:ap-southeast-2:982898479788:key/f3ccf6b7-dfc4-42d8-82f5-9e2be385f403"]'
     TF_VAR_ssm_parameter_arns: '["arn:aws:ssm:ap-southeast-2:982898479788:parameter/buildpipeline/*","arn:aws:ssm:ap-southeast-2:982898479788:parameter/shared/*"]'
     TF_VAR_build_docker_image: "jch254/docker-node-terraform-aws"
-    TF_VAR_build_docker_tag: "14.x"
+    TF_VAR_build_docker_tag: "22.x"
     TF_VAR_buildspec: "buildspec-test.yml"
     TF_VAR_github_repository_owner: "jch254"
     TF_VAR_github_repository_name: "buildpipeline"
@@ -19,9 +19,9 @@ env:
     TF_VAR_cache_bucket: "603-codebuild-cache/buildpipeline-test"
     REMOTE_STATE_BUCKET: "603-terraform-remote-state"
     DEPLOY_ENV: "test"
-    APP_SECRET: "23"
+    APP_SECRET: "23" # Could come from Parameter Store for more security
   parameter-store:
-    TF_VAR_github_oauth_token: "/shared/github-token"
+    TF_VAR_github_connection_arn: "/shared/github-connection-arn"
     GA_ID: "/buildpipeline/ga-id-test"
 
 phases:

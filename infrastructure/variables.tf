@@ -31,8 +31,8 @@ variable "approval_sns_topic_arn" {
   default     = ""
 }
 
-variable "github_oauth_token" {
-  description = "OAuth token used to authenticate against CodePipeline source GitHub repository"
+variable "github_connection_arn" {
+  description = "ARN of the GitHub App connection for CodePipeline source authentication"
 }
 
 variable "github_repository_owner" {
