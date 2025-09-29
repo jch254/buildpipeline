@@ -15,7 +15,11 @@
         "cloudfront:*",
         "route53:*",
         "iam:*",
-        "ssm:DescribeParameters"
+        "ssm:DescribeParameters",
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
       ]
     },
     {
