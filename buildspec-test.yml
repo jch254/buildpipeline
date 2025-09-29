@@ -29,15 +29,17 @@ env:
 phases:
   install:
     commands:
-      # Check if Docker is available, if not, try to install it
+      # Install Docker CLI if not available
       - |
-        if command -v docker >/dev/null 2>&1; then
-          echo "Docker is available, logging in to Docker Hub"
-          echo $DOCKERHUB_TOKEN | docker login --username $DOCKERHUB_USERNAME --password-stdin
-        else
-          echo "Docker not available in this image, skipping Docker Hub login"
-          echo "Note: Docker Hub rate limits are handled at CodeBuild image pull level"
+        if ! command -v docker >/dev/null 2>&1; then
+          echo "Installing Docker CLI..."
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+          service docker start || echo "Docker daemon start not needed in CodeBuild"
         fi
+      # Login to Docker Hub to avoid rate limits
+      - echo "Logging in to Docker Hub..."
+      - echo $DOCKERHUB_TOKEN | docker login --username $DOCKERHUB_USERNAME --password-stdin
       # Workaround until CodeBuild/CodePipeline retains file permissions
       - find ./infrastructure -name "*.bash" -exec chmod +x {} \;
       - ./infrastructure/install.bash
