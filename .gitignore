@@ -8,5 +8,6 @@ npm-debug.log
 yarn-error.log
 stats.json
 .terraform/
+!.terraform.lock.hcl
 *.tfstate*
 *.tfplan*
