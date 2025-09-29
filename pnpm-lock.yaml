@@ -237,6 +237,9 @@ importers:
       events:
         specifier: ^3.3.0
         version: 3.3.0
+      file-loader:
+        specifier: ^6.2.0
+        version: 6.2.0(webpack@5.101.3)
       fork-ts-checker-webpack-plugin:
         specifier: ^9.0.2
         version: 9.1.0(typescript@5.9.2)(webpack@5.101.3)
@@ -5909,7 +5912,6 @@ snapshots:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
       webpack: 5.101.3(webpack-cli@5.1.4)
-    optional: true
 
   fill-range@7.1.1:
     dependencies:
