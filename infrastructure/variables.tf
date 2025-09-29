@@ -63,3 +63,8 @@ variable "cache_bucket" {
   description = "S3 bucket to use as build cache, the value must be a valid S3 bucket name/prefix"
   default     = ""
 }
+
+variable "build_compute_type" {
+  description = "CodeBuild compute type (e.g. BUILD_GENERAL1_SMALL, BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE)"
+  default     = "BUILD_GENERAL1_SMALL"
+}

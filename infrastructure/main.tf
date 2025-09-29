@@ -30,6 +30,7 @@ module "build_pipeline" {
   name                      = var.name
   kms_key_arns              = var.kms_key_arns
   ssm_parameter_arns        = var.ssm_parameter_arns
+  build_compute_type        = var.build_compute_type
   build_docker_image        = var.build_docker_image
   build_docker_tag          = var.build_docker_tag
   buildspec                 = var.buildspec
