@@ -40,34 +40,19 @@ resource "aws_secretsmanager_secret_version" "dockerhub_credentials" {
 data "aws_caller_identity" "current" {}
 
 resource "aws_secretsmanager_secret_policy" "dockerhub_credentials" {
-  count      = var.dockerhub_username != "" ? 1 : 0
+  count     = length(var.dockerhub_username) > 0 ? 1 : 0
   secret_arn = aws_secretsmanager_secret.dockerhub_credentials.arn
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AllowCodeBuildRoleAccess"
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.name}-codebuild"
-        }
-        Action   = [
-          "secretsmanager:GetSecretValue",
-          "secretsmanager:DescribeSecret"
-        ]
-        Resource = "*"
-      },
-      {
-        Sid    = "AllowCodeBuildServiceAccess"
         Effect = "Allow"
         Principal = {
           Service = "codebuild.amazonaws.com"
         }
-        Action   = [
-          "secretsmanager:GetSecretValue",
-          "secretsmanager:DescribeSecret"
-        ]
-        Resource = "*"
+        Action = "secretsmanager:GetSecretValue"
+        Resource = aws_secretsmanager_secret.dockerhub_credentials.arn
         Condition = {
           StringEquals = {
             "aws:SourceAccount" = data.aws_caller_identity.current.account_id
