@@ -92,9 +92,3 @@ variable "security_group_ids" {
   description = "List of security group IDs to assign to running builds"
   default     = []
 }
-
-variable "dockerhub_credentials_arn" {
-  description = "ARN of AWS Secrets Manager secret containing Docker Hub credentials"
-  type        = string
-  default     = ""
-}

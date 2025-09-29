@@ -26,9 +26,8 @@ data "template_file" "codebuild_policy" {
   template = "${file("${path.module}/codebuild-role-policy.tpl")}"
 
   vars = {
-    kms_key_arns              = var.kms_key_arns
-    ssm_parameter_arns        = var.ssm_parameter_arns
-    dockerhub_credentials_arn = var.dockerhub_credentials_arn
+    kms_key_arns       = var.kms_key_arns
+    ssm_parameter_arns = var.ssm_parameter_arns
   }
 }
 
@@ -54,14 +53,6 @@ resource "aws_codebuild_project" "codebuild_project" {
     type                        = "LINUX_CONTAINER"
     privileged_mode             = var.privileged_mode
     image_pull_credentials_type = var.image_pull_credentials_type
-
-    dynamic "registry_credential" {
-      for_each = var.dockerhub_credentials_arn != "" ? [1] : []
-      content {
-        credential          = var.dockerhub_credentials_arn
-        credential_provider = "SECRETS_MANAGER"
-      }
-    }
   }
 
   source {
@@ -92,14 +83,6 @@ resource "aws_codebuild_project" "codebuild_project_in_vpc" {
     type                        = "LINUX_CONTAINER"
     privileged_mode             = var.privileged_mode
     image_pull_credentials_type = var.image_pull_credentials_type
-
-    dynamic "registry_credential" {
-      for_each = var.dockerhub_credentials_arn != "" ? [1] : []
-      content {
-        credential          = var.dockerhub_credentials_arn
-        credential_provider = "SECRETS_MANAGER"
-      }
-    }
   }
 
   source {

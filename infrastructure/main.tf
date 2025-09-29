@@ -21,45 +21,8 @@ provider "aws" {
   region = var.region
 }
 
-# Docker Hub credentials for pulling build images
-resource "aws_secretsmanager_secret" "dockerhub_credentials" {
-  name                    = "${var.name}-dockerhub-credentials"
-  description             = "Docker Hub credentials for CodeBuild image pulls"
-  recovery_window_in_days = 0 # For immediate deletion in dev/test environments
-}
-
-resource "aws_secretsmanager_secret_version" "dockerhub_credentials" {
-  secret_id = aws_secretsmanager_secret.dockerhub_credentials.id
-  secret_string = jsonencode({
-    username = var.dockerhub_username
-    password = var.dockerhub_token
-  })
-}
-
-# Resource policy to allow CodeBuild to access the Docker Hub credentials
+# Get current AWS account ID for ECR repository references
 data "aws_caller_identity" "current" {}
-
-resource "aws_secretsmanager_secret_policy" "dockerhub_credentials" {
-  count     = length(var.dockerhub_username) > 0 ? 1 : 0
-  secret_arn = aws_secretsmanager_secret.dockerhub_credentials.arn
-  
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          AWS = module.build_pipeline.codebuild_role_arn
-        }
-        Action = [
-          "secretsmanager:GetSecretValue",
-          "secretsmanager:DescribeSecret"
-        ]
-        Resource = aws_secretsmanager_secret.dockerhub_credentials.arn
-      }
-    ]
-  })
-}
 
 module "build_pipeline" {
   source = "./modules/build-pipeline"
@@ -77,7 +40,6 @@ module "build_pipeline" {
   github_repository_name    = var.github_repository_name
   github_branch_name        = var.github_branch_name
   cache_bucket              = var.cache_bucket
-  dockerhub_credentials_arn = var.dockerhub_username != "" ? aws_secretsmanager_secret.dockerhub_credentials.arn : ""
 }
 
 module "web_app" {
