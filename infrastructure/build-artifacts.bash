@@ -2,6 +2,6 @@
 
 echo Building artifacts...
 
-yarn run build
+pnpm run build
 
 echo Finished building artifacts
