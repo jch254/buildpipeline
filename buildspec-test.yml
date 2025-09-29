@@ -23,24 +23,13 @@ env:
   parameter-store:
     TF_VAR_github_connection_arn: "/shared/github-connection-arn"
     GA_ID: "/buildpipeline/ga-id-test"
-    DOCKERHUB_USERNAME: "/shared/dockerhub-username"
-    DOCKERHUB_TOKEN: "/shared/dockerhub-token"
 
 phases:
   install:
     commands:
-      # Install Docker CLI if not available
-      - |
-        if ! command -v docker >/dev/null 2>&1; then
-          echo "Installing Docker CLI..."
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sh get-docker.sh
-          service docker start || echo "Docker daemon start not needed in CodeBuild"
-        fi
-      # Login to Docker Hub to avoid rate limits
-      - echo "Logging in to Docker Hub..."
-      - echo $DOCKERHUB_TOKEN | docker login --username $DOCKERHUB_USERNAME --password-stdin
-      # Workaround until CodeBuild/CodePipeline retains file permissions
+      # Note: Docker Hub authentication handled at CodeBuild service level, not in buildspec
+      - echo "Build environment ready - using jch254/docker-node-terraform-aws:22.x"
+      # Restore execute permissions on bash scripts (CodePipeline doesn't preserve them)
       - find ./infrastructure -name "*.bash" -exec chmod +x {} \;
       - ./infrastructure/install.bash
 
