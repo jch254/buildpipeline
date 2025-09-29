@@ -31,6 +31,13 @@
         "ssm:GetParameters"
       ],
       "Resource": ${ssm_parameter_arns}
-    }
+    }%{ if dockerhub_credentials_arn != "" },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "${dockerhub_credentials_arn}"
+    }%{ endif }
   ]
 }
