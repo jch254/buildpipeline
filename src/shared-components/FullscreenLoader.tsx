@@ -8,7 +8,11 @@ interface FullscreenLoaderProps {
 }
 
 const FullscreenLoader = ({ delay, style = {} }: FullscreenLoaderProps) => (
-  <Flex alignItems="center" justifyContent="center" style={{ flex: 'auto', ...style }}>
+  <Flex
+    alignItems="center"
+    justifyContent="center"
+    style={{ flex: 'auto', ...style }}
+  >
     <Loading delay={delay} type="spinningBubbles" color="#111" />
   </Flex>
 );

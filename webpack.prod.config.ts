@@ -1,20 +1,16 @@
-import * as CopyWebpackPlugin from 'copy-webpack-plugin';
-import * as HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as InlineManifestWebpackPlugin from 'inline-manifest-webpack-plugin';
-import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import * as OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import * as path from 'path';
-import * as TerserPlugin from 'terser-webpack-plugin';
-import * as webpack from 'webpack';
-import * as WebpackChunkHash from 'webpack-chunk-hash';
+import TerserPlugin from 'terser-webpack-plugin';
+import webpack from 'webpack';
 
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const config: webpack.Configuration = {
   mode: 'production',
-  entry: [
-    path.join(__dirname, 'src', 'index.tsx'),
-  ],
+  entry: [path.join(__dirname, 'src', 'index.tsx')],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'assets/[name].[contenthash].js',
@@ -30,11 +26,12 @@ const config: webpack.Configuration = {
       },
     }),
     new CopyWebpackPlugin({
-      patterns: [{
-        from: 'env.js',
-        to: 'assets/env.js',
-        transform: (content: Buffer, path: string) => {
-          return `
+      patterns: [
+        {
+          from: 'env.js',
+          to: 'assets/env.js',
+          transform: (content: Buffer, path: string) => {
+            return `
             window.env = {
               DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV)},
               APP_VERSION: ${JSON.stringify(process.env.APP_VERSION)},
@@ -42,11 +39,11 @@ const config: webpack.Configuration = {
               GA_ID: ${JSON.stringify(process.env.GA_ID)}
             }
           `;
+          },
         },
-      }],
+      ],
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
-    new WebpackChunkHash(),
     new MiniCssExtractPlugin({
       filename: 'assets/[name].[contenthash].css',
       ignoreOrder: true,
@@ -56,25 +53,31 @@ const config: webpack.Configuration = {
       template: path.join(__dirname, 'src', 'index.ejs'),
       favicon: path.join(__dirname, 'src', 'favicon.ico'),
       meta: {
-        description: 'AWS-powered serverless build, test and deploy pipeline ft. multiple environments',
+        description:
+          'AWS-powered serverless build, test and deploy pipeline ft. multiple environments',
       },
       minify: {
         collapseWhitespace: true,
       },
     }),
-    new InlineManifestWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin({
       async: false,
     }),
   ],
   optimization: {
     runtimeChunk: 'single',
-    moduleIds: 'hashed',
+    moduleIds: 'deterministic',
     chunkIds: 'named',
     minimizer: [
-      new OptimizeCssAssetsPlugin({
-        cssProcessorOptions: { safe: true, discardComments: { removeAll: true } },
-        canPrint: false,
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: [
+            'default',
+            {
+              discardComments: { removeAll: true },
+            },
+          ],
+        },
       }),
       new TerserPlugin({
         parallel: true,
@@ -112,7 +115,10 @@ const config: webpack.Configuration = {
         // See: https://github.com/webpack-contrib/mini-css-extract-plugin/issues/85
         styles: {
           name: 'styles',
-          test: module => module.nameForCondition && /\.css$/.test(module.nameForCondition()) && !/^javascript/.test(module.type),
+          test: (module: any) =>
+            module.nameForCondition &&
+            /\.css$/.test(module.nameForCondition()) &&
+            !/^javascript/.test(module.type),
           chunks: 'all',
           enforce: true,
         },
@@ -130,27 +136,16 @@ const config: webpack.Configuration = {
     rules: [
       {
         test: /\.tsx?$/,
-        enforce: 'pre',
         include: path.join(__dirname, 'src'),
-        exclude: path.join(__dirname, 'node_modules'),
-        use: {
-          loader: 'tslint-loader',
-          options: {
-            emitErrors: true,
-            failOnHint: false,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              experimentalWatchApi: true,
+            },
           },
-        },
-      },
-      {
-        test: /\.tsx?$/,
-        include: path.join(__dirname, 'src'),
-        use: [{
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: true,
-            experimentalWatchApi: true,
-          },
-        }],
+        ],
       },
       {
         test: /\.css?$/,
@@ -171,13 +166,15 @@ const config: webpack.Configuration = {
       {
         test: /\.(jpe?g|png|gif|svg|ico)$/,
         include: path.join(__dirname, 'src'),
-        use: [{
-          loader: 'url-loader',
-          options: {
-            limit: 10240,
-            esModule: false,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10240,
+              esModule: false,
+            },
           },
-        }],
+        ],
       },
     ],
   },

@@ -153,16 +153,15 @@ resource "aws_codepipeline" "codepipeline" {
     action {
       name             = "pull-source"
       category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "GitHub"
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source"]
 
       configuration = {
-        OAuthToken = var.github_oauth_token
-        Owner      = var.github_repository_owner
-        Repo       = var.github_repository_name
-        Branch     = var.github_branch_name
+        ConnectionArn    = var.github_connection_arn
+        FullRepositoryId = "${var.github_repository_owner}/${var.github_repository_name}"
+        BranchName       = var.github_branch_name
       }
     }
   }
@@ -201,16 +200,15 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
     action {
       name             = "pull-source"
       category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "GitHub"
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source"]
 
       configuration = {
-        OAuthToken = var.github_oauth_token
-        Owner      = var.github_repository_owner
-        Repo       = var.github_repository_name
-        Branch     = var.github_branch_name
+        ConnectionArn    = var.github_connection_arn
+        FullRepositoryId = "${var.github_repository_owner}/${var.github_repository_name}"
+        BranchName       = var.github_branch_name
       }
     }
   }

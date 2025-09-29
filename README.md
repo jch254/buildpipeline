@@ -1,93 +1,104 @@
 # BuildPipeline
 
-## [Test env](https://buildpipeline-test.603.nz) | [Production env](https://buildpipeline-prod.603.nz)
+Test: [test env](https://buildpipeline-test.603.nz) | Prod: [production env](https://buildpipeline-prod.603.nz)
 
-This project demonstrates an AWS-powered serverless build, test and deploy pipeline ft. multiple environments. The [/src](./src) directory contains a React/TypeScript/Webpack-powered web app that is served from S3 with CloudFront as a CDN and Route 53 for DNS. The [/infrastructure](./infrastructure) directory contains all infrastructure and deployment steps defined as code ([Terraform](https://www.terraform.io) and bash scripts). [CodeBuild](https://aws.amazon.com/codebuild) and [CodePipeline](https://aws.amazon.com/codepipeline) take care of building, testing and deploying the project. All build logs are stored in [CloudWatch](https://aws.amazon.com/cloudwatch). CodePipeline accesses GitHub using an access token.
+## Overview
 
-When using CodeBuild to build, test and deploy each project, information about the [build environment](http://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref.html) must be provided. A build environment represents a combination of operating system, programming language runtime, and tools that CodeBuild uses to build, test and deploy - A.K.A. a Docker image. I maintain build environments for the programming languages and tools I use frequently - e.g. [docker-node-terraform-aws](https://github.com/jch254/docker-node-terraform-aws). The build commands and related settings must also be specified in a [buildspec declaration](http://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html) (YAML format) stored at the root level of the project - e.g. [buildspec-test.yml](./buildspec-test.yml). Because a buildspec declaration must be valid YAML, the spacing in a buildspec declaration is important. If the number of spaces in a buildspec declaration is invalid, builds might fail immediately. A YAML validator can be used to test whether a buildspec declaration is valid YAML. See [AWS CodeBuild Concepts](http://docs.aws.amazon.com/codebuild/latest/userguide/concepts.html) and [Build Phase Transitions](http://docs.aws.amazon.com/codebuild/latest/userguide/view-build-details.html#view-build-details-phases) for further information.
+BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipeline with separate test & production environments. The frontend (React + TypeScript + Webpack) is served from S3 behind CloudFront & Route53. Infrastructure and deployment flow are defined as code in Terraform plus a small set of Bash scripts. CodeBuild + CodePipeline orchestrate builds, tests, artifact packaging and promoted releases. Logs: CloudWatch. Secrets: SSM Parameter Store.
 
-This project can be updated as needed to build many different types of project. If a project needs to build Docker images/interact with the Docker daemon the Privileged flag under advanced settings of the CodeBuild project in AWS console must be set to true. This can also be set to true using the privileged_mode variable of the build-pipeline module. The buildspec declaration must also start the Docker daemon and wait for it to become interactive:
+## High‑level Flow
+
+1. Push to master → test env pipeline: build, test, synth/apply infra, upload & deploy assets
+2. Promote: merge master → production branch
+3. Manual approval gate in CodePipeline
+4. Production deploy: infra apply (no rebuild/tests) + asset promotion
+
+## Tech Stack
+
+- Frontend: React, TypeScript, Webpack 5, Rebass v4 (@emotion theme), Redux + Sagas
+- Quality: ESLint 9 flat config, TypeScript strict-ish, Prettier (via ESLint)
+- Infra: Terraform modules (`/infrastructure` + nested modules), Bash helpers
+- CI/CD: AWS CodeBuild, CodePipeline, S3, CloudFront, Route53, CloudWatch Logs
+- Secrets: SSM Parameter Store (SecureString)
+
+## Key Terraform Modules
+
+Located under `infrastructure/modules/` (e.g. `build-pipeline`, `web-app`). Modules encapsulate repeatable infra (pipelines, IAM, hosting). State + buildspec files are per-environment to allow environment‑specific steps.
+
+## Secrets (Parameter Store)
+
+Naming convention:
+
+- Shared: `/shared/SECRET_NAME`
+- CodeBuild: `/codebuild/PROJECT/SECRET_NAME`
+- App: `/{PROJECT}/SECRET_NAME`
+
+Basic CLI examples:
 
 ```sh
-- nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&
-- timeout -t 15 sh -c "until docker info; do echo .; sleep 1; done"
+aws ssm put-parameter --region <REGION> --name "/codebuild/PROJECT/SECRET" --value "VALUE" --type SecureString --key-id <KMS_KEY_ID>
+aws ssm get-parameters --region <REGION> --name "/codebuild/PROJECT/SECRET" --with-decryption --query 'Parameters[0].Value' --output text
 ```
 
-## CodeBuild and application/service secrets
+## Environments & Deployment
 
-This project uses [EC2 Systems Manager Parameter Store](http://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html) to store shared, CodeBuild and app/service secrets as encrypted strings (e.g. passwords, database strings, etc.).
+- master branch → test automatically
+- production branch → prod after manual approval (reduces accidental releases / coordinates timing)
+- Separate buildspec + state per environment
+- Production skips build & tests: only infra apply + artifact deploy
 
-Secrets can be encrypted and decrypted via AWS console/CLI/SDK:
+## Optional Docker Builds
+
+If building Docker images, enable privileged mode (CodeBuild project or module variable) and start the daemon early in the buildspec:
 
 ```sh
-aws ssm put-parameter --region REGION --name "/codebuild/PROJECT_NAME/SECRET_NAME" --value "VALUE" --type SecureString --key-id "KEY_ID"
-aws ssm get-parameters --region REGION --name "/codebuild/PROJECT_NAME/SECRET_NAME" --with-decryption --query Parameters[0].Value --output text
+nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay &
+timeout -t 15 sh -c "until docker info; do echo .; sleep 1; done"
 ```
-
-### Naming Parameter Store parameters
-
-- Shared secrets: /shared/SECRET_NAME
-- CodeBuild secrets: /codebuild/PROJECT_NAME/SECRET_NAME
-- App/service secrets: /PROJECT_NAME/SECRET_NAME
-
-See [./buildspec-test.yml](./buildspec-test.yml) as an example of decrypting a shared secret (GitHub OAuth token) via SSM Parameter Store in a buildspec declaration.
-
-## Deploying to production
-
-![Production deploy](https://about.gitlab.com/images/git_flow/production_branch.png)
-
-This project automatically deploys the master branch to the test environment. To deploy a new version to the production environment the master branch must be merged into a production branch. The production branch is deployed to the production environment only after it is explicitly confirmed by the required parties via a [CodePipeline approval action](http://docs.aws.amazon.com/codepipeline/latest/userguide/approvals-action-add.html). The approval action prevents accidental releases to production (e.g. someone merges master into production by accident). This is useful as the production deploy is tightly controlled - to avoid impacting users during peak hours, align releases with third parties etc. Each commit on the production branch reflects a production deploy with the commit time being the approximate time of deployment (providing the pipelines are fast enough). Approval notifications are sent out via SNS.
-
-![Approval notification](https://img.jch254.com/Approval.png)
-
-Different steps run in each environment by utilising separate buildspec declarations and Terraform state files per environment. Production doesn't need to build or run tests, it just needs to deploy infrastructure and artifacts.
-
-## Cross-account production deploy
-
-TODO!
-
-## Build notifications
-
-AWS [provides instructions](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html) on setting up build notifications with CloudWatch Events and SNS to send build notifications to subscribers whenever builds succeed, fail, go from one build phase to another, or any combination of these events. For more detailed notifications a Lambda function can be used (e.g. including commit details, sending data to a webhook etc.).
 
 ## Caching
 
-If the cache_bucket Terraform variable is provided, CodeBuild will use a folder in the given bucket as a build cache. See [./buildspec-test.yml](./buildspec-test.yml) as an example of defining cache paths in a buildspec declaration.
+Provide `cache_bucket` Terraform variable → CodeBuild layer caches (see `buildspec-test.yml`).
 
-## Using shared Terraform modules
-
-This project defines Terraform modules within the [/infrastructure](./infrastructure) directory. A good practice is to create a repository containing common infrastructure components which can be referenced and configured within other projects (e.g. web-app, rds-database, ecs-service etc.). Utilising Terraform modules to create 'building blocks' allows conventions to be enforced and standards defined for infrastructure (e.g. tags, security etc.). Modules are defined once then referenced and configured within projects using the repository URL/branch/tag/subfolder as the module source. This makes it easy for developers to define infrastructure as code within projects, achieve total ownership (provisioning and deploying as needed) and move fast. It also makes it easy to try out new concepts/ideas on isolated infrastructure. See [Standardizing Application Deployments Using Amazon ECS and Terraform](https://www.slideshare.net/AmazonWebServices/aws-reinvent-2016-gam401-riot-games-standardizing-application-deployments-using-amazon-ecs-and-terraform) for a more detailed introduction and [terraform-modules](https://github.com/jch254/terraform-modules) for an example.
-
---
-
-## Running the web app locally (with hot reloading)
-
-1. Run the following commands in the app's root directory then open <http://localhost:3001>
+## Local Development
 
 ```sh
-yarn install
-yarn run dev
+pnpm install
+pnpm dev          # http://localhost:3001 (hot reload)
 ```
 
-## Building the production web app
-
-1. Run the following commands in the app's root directory then check the /dist folder
+## Production Build
 
 ```sh
-yarn install
-yarn run build
+pnpm install
+pnpm build        # outputs to /dist
 ```
 
-## Running the production web app locally
-
-1. Run the following commands in the app's root directory then open <http://localhost:3001>
+## Run Production Locally
 
 ```sh
-yarn install
-yarn run prod
+pnpm install
+pnpm prod         # serves built assets
 ```
 
-## Deployment/Infrastructure
+## Recent Modernization
 
-Refer to the [/infrastructure](./infrastructure) directory.
+- Migrated to ESLint 9 flat config; removed legacy TSLint remnants
+- Aligned React Router to v6 (was mixed with v7 bits)
+- Rebass v4 migration + unified @emotion ThemeProvider
+- Added safe runtime env fallbacks (DEPLOY_ENV, APP_VERSION)
+- Simplified Home page layout; consistent spacing & typography
 
+## Roadmap / TODO
+
+- Cross-account production deployment pattern
+- Extended build notifications (Lambda → Slack/webhook)
+- Additional reusable infra modules
+
+## Infrastructure Reference
+
+See `./infrastructure` for Terraform root modules, helper scripts and environment state layout.
+
+---
+
+MIT License

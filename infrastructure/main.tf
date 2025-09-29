@@ -1,12 +1,24 @@
 terraform {
+  required_version = ">= 1.0"
+  
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+    template = {
+      source  = "hashicorp/template"
+      version = "~> 2.2"
+    }
+  }
+  
   backend "s3" {
     encrypt = "true"
   }
 }
 
 provider "aws" {
-  region  = var.region
-  version = "~> 2.0"
+  region = var.region
 }
 
 module "build_pipeline" {
@@ -20,7 +32,7 @@ module "build_pipeline" {
   buildspec               = var.buildspec
   require_approval        = var.github_branch_name == "production" ? "true" : "false"
   approval_sns_topic_arn  = var.approval_sns_topic_arn
-  github_oauth_token      = var.github_oauth_token
+  github_connection_arn   = var.github_connection_arn
   github_repository_owner = var.github_repository_owner
   github_repository_name  = var.github_repository_name
   github_branch_name      = var.github_branch_name

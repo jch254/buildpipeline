@@ -7,7 +7,9 @@
         "codebuild:*",
         "s3:*",
         "codecommit:*",
-        "sns:*"
+        "sns:*",
+        "codestar-connections:UseConnection",
+        "codestar-connections:GetConnection"
       ],
       "Resource": "*"
     }
