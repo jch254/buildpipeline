@@ -46,12 +46,27 @@ resource "aws_secretsmanager_secret_policy" "dockerhub_credentials" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AllowCodeBuildAccess"
+        Sid    = "AllowCodeBuildRoleAccess"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.name}-codebuild"
+        }
+        Action   = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowCodeBuildServiceAccess"
         Effect = "Allow"
         Principal = {
           Service = "codebuild.amazonaws.com"
         }
-        Action   = "secretsmanager:GetSecretValue"
+        Action   = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
         Resource = "*"
         Condition = {
           StringEquals = {
