@@ -34,7 +34,7 @@ phases:
 
   pre_build:
     commands:
-      - export APP_VERSION=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - export APP_VERSION=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}
 
   build:
     commands:
