@@ -1,5 +1,7 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_s3_bucket" "apex_bucket" {
-  bucket        = var.dns_name
+  bucket        = "${replace(var.dns_name, ".", "-")}-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 

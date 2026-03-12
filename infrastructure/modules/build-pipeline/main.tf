@@ -3,6 +3,8 @@ resource "aws_cloudwatch_log_group" "codebuild_lg" {
   retention_in_days = var.log_retention
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "codebuild_role" {
   name = "${var.name}-codebuild"
 
@@ -132,7 +134,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 }
 
 resource "aws_s3_bucket" "artifacts" {
-  bucket        = "${var.name}-artifacts"
+  bucket        = "${var.name}-artifacts-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 
