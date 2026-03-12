@@ -8,7 +8,7 @@ env:
     TF_VAR_kms_key_arns: '["arn:aws:kms:ap-southeast-2:352311918919:key/8d3ffdfd-3292-42d5-a74c-d4ba45921eed"]'
     TF_VAR_ssm_parameter_arns: '["arn:aws:ssm:ap-southeast-2:352311918919:parameter/buildpipeline/*"]'
     TF_VAR_build_docker_image: "352311918919.dkr.ecr.ap-southeast-2.amazonaws.com/dind-terraform-aws"
-    TF_VAR_build_docker_tag: "lightweight-v1.13.3"
+    TF_VAR_build_docker_tag: "v1.13.1"
     TF_VAR_buildspec: "buildspec-prod.yml"
     TF_VAR_github_repository_owner: "jch254"
     TF_VAR_github_repository_name: "buildpipeline"
