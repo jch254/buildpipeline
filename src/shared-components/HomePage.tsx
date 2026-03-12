@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Box, Heading, Text } from 'rebass';
-const banner = require('./Banner.jpg');
+const banner = require('./Banner.jpg') as string;
 
 const HomePage: React.FC = () => (
   <div>
     <Box
       style={{
-        minHeight: '75vh',
+        minHeight: '78vh',
         backgroundAttachment: 'scroll',
         backgroundImage: `url(${banner})`,
         backgroundSize: 'cover',
@@ -15,37 +15,139 @@ const HomePage: React.FC = () => (
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: '2rem 1.25rem',
       }}
       m={0}
     >
-      <Heading
-        textAlign="center"
-        color="white"
-        fontSize={[6, 7]}
-        fontWeight="bold"
-        mb={3}
-        fontFamily="heading"
+      <Box
+        style={{
+          width: '100%',
+          maxWidth: '820px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1rem',
+          textAlign: 'center',
+          padding: '2.25rem 1.5rem',
+          borderRadius: '24px',
+          backgroundColor: 'rgba(4, 12, 18, 0.58)',
+          backdropFilter: 'blur(4px)',
+        }}
       >
-        BuildPipeline
-      </Heading>
-      <Text
-        textAlign="center"
-        color="white"
-        fontSize={[3, 4]}
-        mb={2}
-        maxWidth="800px"
-        lineHeight={1.4}
-      >
-        AWS-powered serverless build, test and deploy pipeline ft. multiple
-        environments
-      </Text>
-      <Text textAlign="center" color="white" fontSize={[1, 2]} pt={2}>
-        {`ENV: ${window.env.DEPLOY_ENV} | VERSION: ${window.env.APP_VERSION}`}
-      </Text>
+        <Heading
+          textAlign="center"
+          color="white"
+          fontSize={[6, 7]}
+          fontWeight="bold"
+          mb={0}
+          fontFamily="heading"
+        >
+          BuildPipeline
+        </Heading>
+        <Text
+          textAlign="center"
+          color="white"
+          fontSize={[3, 4]}
+          mb={0}
+          maxWidth="760px"
+          lineHeight={1.35}
+        >
+          AWS-powered serverless build, test and deploy pipeline ft. multiple
+          environments
+        </Text>
+        <Box
+          className="hero-pill-row"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'nowrap',
+            gap: '0.75rem',
+            width: '100%',
+            maxWidth: '760px',
+          }}
+        >
+          <Box
+            className="hero-pill"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: '1 1 0',
+              minWidth: 0,
+              padding: '0.45rem 0.8rem',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+            }}
+          >
+            <Text color="white" fontSize={[0, 1]} mb={0} style={{ whiteSpace: 'nowrap' }}>
+              {`APP SECRET: ${window.env.APP_SECRET}`}
+            </Text>
+          </Box>
+          <Box
+            className="hero-pill"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: '1 1 0',
+              minWidth: 0,
+              padding: '0.45rem 0.8rem',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+            }}
+          >
+            <Text color="white" fontSize={[0, 1]} mb={0} style={{ whiteSpace: 'nowrap' }}>
+              {`ENV: ${window.env.DEPLOY_ENV}`}
+            </Text>
+          </Box>
+          <Box
+            className="hero-pill"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: '1 1 0',
+              minWidth: 0,
+              padding: '0.45rem 0.8rem',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+            }}
+          >
+            <Text color="white" fontSize={[0, 1]} mb={0} style={{ whiteSpace: 'nowrap' }}>
+              {`VERSION: ${window.env.APP_VERSION}`}
+            </Text>
+          </Box>
+        </Box>
+        <a
+          href={
+            window.env.DEPLOY_ENV === 'production'
+              ? 'https://buildpipeline--test.603.nz'
+              : 'https://buildpipeline--prod.603.nz'
+          }
+          style={{
+            marginTop: '0.5rem',
+            display: 'inline-block',
+            padding: '0.85rem 1.4rem',
+            borderRadius: '999px',
+            backgroundColor: '#ffffff',
+            color: '#111111',
+            fontWeight: 700,
+            textDecoration: 'none',
+          }}
+        >
+          {window.env.DEPLOY_ENV === 'production'
+            ? 'View test environment'
+            : 'View production environment'}
+        </a>
+      </Box>
     </Box>
-    <Box px={[3, 4, 5]} py={4} maxWidth="1200px" mx="auto">
+    <Box px={[3, 4, 5]} py={[4, 5]} maxWidth="1200px" mx="auto">
       <Heading
-        pt={4}
+        pt={2}
         pb={3}
         fontSize={[4, 5]}
         color="text"
@@ -56,9 +158,10 @@ const HomePage: React.FC = () => (
       <Text fontSize={[2, 3]} lineHeight="copy" mb={4} color="text">
         This project demonstrates an AWS-powered serverless build, test and
         deploy pipeline ft. multiple environments. The /src directory contains a
-        React/TypeScript/Webpack-powered web app that is served from S3 with
-        CloudFront as a CDN and Route 53 for DNS. The /infrastructure directory
-        contains all infrastructure and deployment steps defined as code (
+        React/TypeScript/Webpack-powered web app that is served from a private
+        S3 bucket through CloudFront, with DNS managed in Cloudflare. The
+        /infrastructure directory contains all infrastructure and deployment
+        steps defined as code (
         <a
           href="https://www.terraform.io"
           target="_blank"
@@ -82,8 +185,17 @@ const HomePage: React.FC = () => (
         >
           CodePipeline
         </a>{' '}
-        take care of building, testing and deploying the project. All build logs
-        are stored in{' '}
+        take care of building, testing and deploying the project. GitHub access
+        is handled through{' '}
+        <a
+          href="https://docs.aws.amazon.com/dtconsole/latest/userguide/connections.html"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          AWS CodeConnections
+        </a>{' '}
+        and deployment secrets are read from AWS Systems Manager Parameter
+        Store. All build logs are stored in{' '}
         <a
           href="https://aws.amazon.com/cloudwatch"
           target="_blank"
@@ -91,7 +203,7 @@ const HomePage: React.FC = () => (
         >
           CloudWatch
         </a>
-        . CodePipeline accesses GitHub using an access token.
+        .
       </Text>
       <Text fontSize={[2, 3]} lineHeight="copy" mb={4} color="text">
         When using CodeBuild to build, test and deploy each project, information
@@ -105,9 +217,8 @@ const HomePage: React.FC = () => (
         </a>{' '}
         must be provided. A build environment represents a combination of
         operating system, programming language runtime, and tools that CodeBuild
-        uses to build, test and deploy - A.K.A. a Docker image. I maintain build
-        environments for the programming languages and tools I use frequently -
-        e.g.{' '}
+        uses to build, test and deploy. In this demo, those environments are
+        versioned Docker images stored in Amazon ECR, for example{' '}
         <a
           href="https://github.com/jch254/docker-node-terraform-aws"
           target="_blank"
@@ -123,11 +234,10 @@ const HomePage: React.FC = () => (
         >
           buildspec declaration
         </a>{' '}
-        stored at the root level of the project. Because a buildspec declaration
-        must be valid YAML, the spacing in a buildspec declaration is important.
-        If the number of spaces in a buildspec declaration is invalid builds
-        might fail immediately. A YAML validator can be used to test whether a
-        buildspec declaration is valid YAML. See{' '}
+        stored at the root level of the project. The test environment builds,
+        tests, deploys infrastructure, and uploads the app automatically. The
+        production branch follows the same flow with a manual approval gate
+        before deployment. See{' '}
         <a
           href="http://docs.aws.amazon.com/codebuild/latest/userguide/concepts.html"
           target="_blank"
@@ -165,13 +275,6 @@ const HomePage: React.FC = () => (
           README.md
         </a>{' '}
         for more details.
-      </Text>
-      <Text fontSize={[2, 3]} lineHeight="copy" color="text">
-        {window.env.DEPLOY_ENV === 'production' ? (
-          <a href="https://buildpipeline--test.603.nz">View test env</a>
-        ) : (
-          <a href="https://buildpipeline--prod.603.nz">View production env</a>
-        )}
       </Text>
     </Box>
   </div>
