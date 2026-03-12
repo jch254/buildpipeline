@@ -1,19 +1,25 @@
 #!/bin/bash
+set -euo pipefail
 
-# Script to set ECR repository policy for CodeBuild access
-# This allows CodeBuild to pull images from the ECR repository
+# Script to set ECR repository policies so CodeBuild can pull environment images.
 
-REPOSITORY_NAME="docker-node-terraform-aws"
 REGION="ap-southeast-2"
 ACCOUNT_ID="352311918919"
 
-# Create ECR repository policy that allows CodeBuild to pull images
-cat > ecr-policy.json << EOF
+usage() {
+  echo "Usage: $0 [docker-node-terraform-aws|dind-terraform-aws|all]" >&2
+  exit 1
+}
+
+build_policy_file() {
+  local policy_file="$1"
+
+  cat > "$policy_file" << EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "AllowCodeBuildAccess",
+      "Sid": "AllowCodeBuildProjects",
       "Effect": "Allow",
       "Principal": {
         "Service": "codebuild.amazonaws.com"
@@ -22,32 +28,54 @@ cat > ecr-policy.json << EOF
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
         "ecr:BatchCheckLayerAvailability"
-      ]
-    },
-    {
-      "Sid": "AllowCodeBuildRole",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": [
-          "arn:aws:iam::${ACCOUNT_ID}:role/buildpipeline-test-codebuild",
-          "arn:aws:iam::${ACCOUNT_ID}:role/buildpipeline-prod-codebuild"
-        ]
-      },
-      "Action": [
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "ecr:BatchCheckLayerAvailability"
-      ]
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "${ACCOUNT_ID}"
+        },
+        "ArnLike": {
+          "aws:SourceArn": [
+            "arn:aws:codebuild:${REGION}:${ACCOUNT_ID}:project/buildpipeline-test",
+            "arn:aws:codebuild:${REGION}:${ACCOUNT_ID}:project/buildpipeline-prod"
+          ]
+        }
+      }
     }
   ]
 }
 EOF
+}
 
-echo "Setting ECR repository policy for ${REPOSITORY_NAME}..."
-aws ecr set-repository-policy \
-  --repository-name "${REPOSITORY_NAME}" \
-  --region "${REGION}" \
-  --policy-text file://ecr-policy.json
+set_policy() {
+  local repository_name="$1"
+  local policy_file
 
-echo "ECR repository policy set successfully!"
-rm ecr-policy.json
+  policy_file=$(mktemp)
+  build_policy_file "$policy_file"
+
+  echo "Setting ECR repository policy for ${repository_name}..."
+  aws ecr set-repository-policy \
+    --repository-name "${repository_name}" \
+    --region "${REGION}" \
+    --policy-text "file://${policy_file}"
+
+  rm -f "$policy_file"
+}
+
+case "${1:-all}" in
+  docker-node-terraform-aws)
+    set_policy "docker-node-terraform-aws"
+    ;;
+  dind-terraform-aws)
+    set_policy "dind-terraform-aws"
+    ;;
+  all)
+    set_policy "docker-node-terraform-aws"
+    set_policy "dind-terraform-aws"
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+echo "ECR repository policy update complete."
