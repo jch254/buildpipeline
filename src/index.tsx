@@ -44,7 +44,6 @@ declare global {
       DEPLOY_ENV: string;
       APP_VERSION: string;
       APP_SECRET: string;
-      GA_ID: string;
     };
   }
 }

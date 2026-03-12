@@ -21,7 +21,7 @@ The following infrastructure components should be created manually and passed to
 - Cloudflare API token with DNS edit access for the apex domain, exposed to project repos as CLOUDFLARE_API_TOKEN
 - ACM Certificate in US East (N. Virginia) region for CloudFront
 - one buildpipeline KMS key for SecureString parameters used by this repo
-- buildpipeline SSM Parameter Store entries for GitHub connection ARN, Cloudflare values, GA IDs, and environment-specific app secrets
+- buildpipeline SSM Parameter Store entries for the Cloudflare API token and environment-specific app secrets
 
 Production approval SNS topics are created by this Terraform stack. If you want email or other subscriptions, add those manually after the topic exists.
 

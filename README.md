@@ -19,7 +19,7 @@ BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipelin
 - Quality: ESLint 9 flat config, TypeScript strict-ish, Prettier (via ESLint)
 - Infra: Terraform modules (`/infrastructure` + nested modules), Bash helpers
 - CI/CD: AWS CodeBuild, CodePipeline, S3, CloudFront, Cloudflare DNS, CloudWatch Logs
-- Secrets: SSM Parameter Store (SecureString)
+- Secrets: SSM Parameter Store (SecureString) for deployment/runtime secrets only
 
 ## Key Terraform Modules
 
