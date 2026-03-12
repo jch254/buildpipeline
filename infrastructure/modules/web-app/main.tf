@@ -60,16 +60,15 @@ resource "aws_cloudfront_distribution" "cdn" {
   price_class = "PriceClass_All"
 
   default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "apex_bucket_origin"
 
     forwarded_values {
-      query_string = true
-      headers      = ["*"]
+      query_string = false
 
       cookies {
-        forward = "all"
+        forward = "none"
       }
     }
 
