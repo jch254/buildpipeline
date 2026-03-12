@@ -185,6 +185,7 @@ resource "aws_codepipeline" "codepipeline" {
         ConnectionArn    = var.github_connection_arn
         FullRepositoryId = "${var.github_repository_owner}/${var.github_repository_name}"
         BranchName       = var.github_branch_name
+        DetectChanges    = "true"
       }
     }
   }
@@ -232,6 +233,7 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
         ConnectionArn    = var.github_connection_arn
         FullRepositoryId = "${var.github_repository_owner}/${var.github_repository_name}"
         BranchName       = var.github_branch_name
+        DetectChanges    = "true"
       }
     }
   }
