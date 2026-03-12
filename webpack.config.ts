@@ -27,7 +27,6 @@ const config: webpack.Configuration = {
       'process.env': {
         AUTH0_CLIENT_ID: JSON.stringify(process.env.AUTH0_CLIENT_ID),
         AUTH0_DOMAIN: JSON.stringify(process.env.AUTH0_DOMAIN),
-        GA_ID: JSON.stringify(process.env.GA_ID),
       },
     }),
     new CopyWebpackPlugin({
@@ -40,8 +39,7 @@ const config: webpack.Configuration = {
             window.env = {
               DEPLOY_ENV: ${JSON.stringify(process.env.DEPLOY_ENV || 'development')},
               APP_VERSION: ${JSON.stringify(process.env.APP_VERSION || '1.0.0-dev')},
-              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET || 'dev-secret')},
-              GA_ID: ${JSON.stringify(process.env.GA_ID || 'GA-XXXXXXXXX-X')}
+              APP_SECRET: ${JSON.stringify(process.env.APP_SECRET || 'dev-secret')}
             }
           `;
           },

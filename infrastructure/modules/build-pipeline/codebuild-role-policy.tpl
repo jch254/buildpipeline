@@ -35,6 +35,13 @@
         "ssm:GetParameters"
       ],
       "Resource": ${ssm_parameter_arns}
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "codestar-connections:PassConnection"
+      ],
+      "Resource": ${github_connection_arn}
     }
   ]
 }

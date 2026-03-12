@@ -2,8 +2,8 @@ variable "dns_name" {
   description = "DNS name for app"
 }
 
-variable "route53_zone_id" {
-  description = "Route 53 Hosted Zone ID"
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID for the apex domain"
 }
 
 variable "acm_arn" {

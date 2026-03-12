@@ -3,6 +3,8 @@ resource "aws_cloudwatch_log_group" "codebuild_lg" {
   retention_in_days = var.log_retention
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "codebuild_role" {
   name = "${var.name}-codebuild"
 
@@ -23,11 +25,12 @@ EOF
 }
 
 data "template_file" "codebuild_policy" {
-  template = "${file("${path.module}/codebuild-role-policy.tpl")}"
+  template = file("${path.module}/codebuild-role-policy.tpl")
 
   vars = {
-    kms_key_arns       = var.kms_key_arns
-    ssm_parameter_arns = var.ssm_parameter_arns
+    kms_key_arns          = var.kms_key_arns
+    ssm_parameter_arns    = var.ssm_parameter_arns
+    github_connection_arn = jsonencode(var.github_connection_arn)
   }
 }
 
@@ -122,7 +125,7 @@ EOF
 }
 
 data "template_file" "codepipeline_policy" {
-  template = "${file("${path.module}/codepipeline-role-policy.tpl")}"
+  template = file("${path.module}/codepipeline-role-policy.tpl")
 }
 
 resource "aws_iam_role_policy" "codepipeline_policy" {
@@ -132,9 +135,30 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 }
 
 resource "aws_s3_bucket" "artifacts" {
-  bucket        = "${var.name}-artifacts"
-  acl           = "private"
+  bucket        = "${var.name}-artifacts-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
+}
+
+resource "aws_s3_bucket_public_access_block" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_sns_topic" "approval" {
+  count = var.require_approval == "true" ? 1 : 0
+  name  = "${var.name}-approvals"
 }
 
 resource "aws_codepipeline" "codepipeline" {
@@ -162,6 +186,7 @@ resource "aws_codepipeline" "codepipeline" {
         ConnectionArn    = var.github_connection_arn
         FullRepositoryId = "${var.github_repository_owner}/${var.github_repository_name}"
         BranchName       = var.github_branch_name
+        DetectChanges    = "true"
       }
     }
   }
@@ -209,6 +234,7 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
         ConnectionArn    = var.github_connection_arn
         FullRepositoryId = "${var.github_repository_owner}/${var.github_repository_name}"
         BranchName       = var.github_branch_name
+        DetectChanges    = "true"
       }
     }
   }
@@ -224,7 +250,7 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
       version  = "1"
 
       configuration = {
-        NotificationArn = var.approval_sns_topic_arn
+        NotificationArn = aws_sns_topic.approval[0].arn
         CustomData      = var.approval_comment
       }
     }
