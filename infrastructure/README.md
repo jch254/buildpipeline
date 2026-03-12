@@ -36,6 +36,8 @@ There is a chicken and egg situation - CodeBuild and CodePipeline will eventuall
 
 The bootstrap script reads the selected buildspec, exports `env.variables`, resolves `env.parameter-store` entries via AWS SSM with decryption, and runs the initial Terraform apply locally. After that first apply, CodeBuild and CodePipeline can own subsequent deploys.
 
+If your Terraform remote state bucket is in a different region from the infrastructure you are deploying, set `REMOTE_STATE_REGION` in the buildspec. If it is omitted, Terraform falls back to `TF_VAR_region`.
+
 If you want the manual path instead, exporting the environment variables specified in a buildspec declaration is tedious and time-consuming. The bash script below utilises a YAML parser called [shyaml](https://github.com/0k/shyaml) and automates the process (shyaml must be installed before using). Environment variables specified in buildspec phases or bash scripts will still need to be exported manually.
 
 ```sh
@@ -59,7 +61,7 @@ export $(
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
   -backend-config 'key=YOUR_S3_KEY' \
-  -backend-config 'region=YOUR_REGION' \
+  -backend-config 'region=YOUR_BACKEND_REGION' \
   -get=true \
   -upgrade=true
 ```
@@ -77,7 +79,7 @@ terraform init \
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
   -backend-config 'key=YOUR_S3_KEY' \
-  -backend-config 'region=YOUR_REGION' \
+  -backend-config 'region=YOUR_BACKEND_REGION' \
   -get=true \
   -upgrade=true
 ```
@@ -94,7 +96,7 @@ terraform init \
 terraform init \
   -backend-config 'bucket=YOUR_S3_BUCKET' \
   -backend-config 'key=YOUR_S3_KEY' \
-  -backend-config 'region=YOUR_REGION' \
+  -backend-config 'region=YOUR_BACKEND_REGION' \
   -get=true \
   -upgrade=true
 ```

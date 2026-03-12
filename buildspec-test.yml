@@ -19,6 +19,7 @@ env:
     TF_VAR_github_connection_arn: "arn:aws:codeconnections:ap-southeast-2:352311918919:connection/c9e4c26e-c366-4077-82ef-278282f97feb"
     TF_VAR_cloudflare_zone_id: "692b2307a53fc5837e75ee5558cb0ebf"
     REMOTE_STATE_BUCKET: "jch254-terraform-remote-state"
+    REMOTE_STATE_REGION: "ap-southeast-4"
     DEPLOY_ENV: "test"
   parameter-store:
     CLOUDFLARE_API_TOKEN: "/buildpipeline/cloudflare-api-token"
