@@ -28,8 +28,9 @@ data "template_file" "codebuild_policy" {
   template = file("${path.module}/codebuild-role-policy.tpl")
 
   vars = {
-    kms_key_arns       = var.kms_key_arns
-    ssm_parameter_arns = var.ssm_parameter_arns
+    kms_key_arns          = var.kms_key_arns
+    ssm_parameter_arns    = var.ssm_parameter_arns
+    github_connection_arn = jsonencode(var.github_connection_arn)
   }
 }
 
