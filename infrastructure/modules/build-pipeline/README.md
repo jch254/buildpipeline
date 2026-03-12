@@ -4,7 +4,7 @@
 
 | Name      | Version |
 | --------- | ------- |
-| terraform | >= 0.12 |
+| terraform | >= 1.0 |
 
 ## Inputs
 

@@ -4,15 +4,15 @@
 
 | Name      | Version |
 | --------- | ------- |
-| terraform | >= 0.12 |
+| terraform | >= 1.0 |
 
 ## Inputs
 
 | Name            | Description                |  Type  | Default | Required |
 | --------------- | -------------------------- | :----: | :-----: | :------: |
 | acm_arn         | ARN of ACM SSL certificate | string |   n/a   |   yes    |
+| cloudflare_zone_id | Cloudflare Zone ID for the apex domain | string |   n/a   |   yes    |
 | dns_name        | DNS name for app           | string |   n/a   |   yes    |
-| route53_zone_id | Route 53 Hosted Zone ID    | string |   n/a   |   yes    |
 
 ## Outputs
 

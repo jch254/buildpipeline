@@ -1,6 +1,6 @@
 # Deployment/Infrastructure
 
-BuildPipeline is built, tested and deployed to AWS by CodePipeline and CodeBuild. Artifacts are served from S3. CloudFront is used as a CDN. Route 53 is used for DNS.
+BuildPipeline is built, tested and deployed to AWS by CodePipeline and CodeBuild. Artifacts are served from S3. CloudFront is used as a CDN. DNS for project subdomains is managed in Cloudflare.
 
 To deploy to AWS, you must:
 
@@ -17,11 +17,13 @@ To deploy to AWS, you must:
 
 The following infrastructure components should be created manually and passed to Terraform via the appropriate variables in the appropriate buildspec declaration:
 
-- Route53 hosted zone
+- Cloudflare zone for the apex domain, with the zone ID exposed to project repos
+- Cloudflare API token with DNS edit access for the apex domain, exposed to project repos as CLOUDFLARE_API_TOKEN
 - ACM Certificate in US East (N. Virginia) region for CloudFront
-- build-approvals SNS topic and subscriptions
-- shared and buildpipeline KMS keys
-- shared/github-token and buildpipeline/app-secret SSM Parameter Store parameters encrypted with the appropriate KMS key
+- one buildpipeline KMS key for SecureString parameters used by this repo
+- buildpipeline SSM Parameter Store entries for GitHub connection ARN, Cloudflare values, GA IDs, and environment-specific app secrets
+
+Production approval SNS topics are created by this Terraform stack. If you want email or other subscriptions, add those manually after the topic exists.
 
 ## Initial deploy
 
@@ -29,10 +31,12 @@ There is a chicken and egg situation - CodeBuild and CodePipeline will eventuall
 
 **All commands below must be run from the root directory.**
 
-1. Update and export all environment variables specified in the appropriate buildspec declaration (check all phases) and bash scripts
-1. `infrastructure/deploy-infrastructure.bash`
+1. Ensure your local AWS credentials can access the target account and SSM parameters.
+1. Run `./infrastructure/bootstrap-deploy.bash test` for the test environment, or `./infrastructure/bootstrap-deploy.bash prod` for production.
 
-Exporting the environment variables specified in a buildspec declaration is tedious and time-consuming. The bash script below utilises a YAML parser called [shyaml](https://github.com/0k/shyaml) and automates the process (shyaml must be installed before using). Environment variables specified in buildspec phases or bash scripts will still need to be exported manually.
+The bootstrap script reads the selected buildspec, exports `env.variables`, resolves `env.parameter-store` entries via AWS SSM with decryption, and runs the initial Terraform apply locally. After that first apply, CodeBuild and CodePipeline can own subsequent deploys.
+
+If you want the manual path instead, exporting the environment variables specified in a buildspec declaration is tedious and time-consuming. The bash script below utilises a YAML parser called [shyaml](https://github.com/0k/shyaml) and automates the process (shyaml must be installed before using). Environment variables specified in buildspec phases or bash scripts will still need to be exported manually.
 
 ```sh
 export $(
@@ -48,7 +52,7 @@ export $(
 
 ## Manually deploying infrastructure
 
-1. Update and export all environment variables specified in the appropriate buildspec declaration (check all phases) and bash scripts
+1. Update and export all environment variables specified in the appropriate buildspec declaration, including values referenced from Parameter Store
 1. Initialise Terraform:
 
 ```terraform

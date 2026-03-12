@@ -37,11 +37,6 @@ variable "require_approval" {
   default     = "false"
 }
 
-variable "approval_sns_topic_arn" {
-  description = "Approval notifications will be published to the specified SNS topic. Required if require_approval is true."
-  default     = ""
-}
-
 variable "approval_comment" {
   description = "Comment to include in approval notifications. Required if require_approval is true."
   default     = "A production deploy has been requested."

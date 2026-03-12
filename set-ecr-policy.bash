@@ -3,9 +3,9 @@
 # Script to set ECR repository policy for CodeBuild access
 # This allows CodeBuild to pull images from the ECR repository
 
-REPOSITORY_NAME="buildpipeline-docker-node-terraform-aws"
+REPOSITORY_NAME="docker-node-terraform-aws"
 REGION="ap-southeast-2"
-ACCOUNT_ID="982898479788"
+ACCOUNT_ID="352311918919"
 
 # Create ECR repository policy that allows CodeBuild to pull images
 cat > ecr-policy.json << EOF

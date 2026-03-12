@@ -4,7 +4,7 @@ Test: [test env](https://buildpipeline-test.603.nz) | Prod: [production env](htt
 
 ## Overview
 
-BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipeline with separate test & production environments. The frontend (React + TypeScript + Webpack) is served from S3 behind CloudFront & Route53. Infrastructure and deployment flow are defined as code in Terraform plus a small set of Bash scripts. CodeBuild + CodePipeline orchestrate builds, tests, artifact packaging and promoted releases. Logs: CloudWatch. Secrets: SSM Parameter Store.
+BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipeline with separate test & production environments. The frontend (React + TypeScript + Webpack) is served from S3 behind CloudFront, with project subdomains managed in Cloudflare. Infrastructure and deployment flow are defined as code in Terraform plus a small set of Bash scripts. CodeBuild + CodePipeline orchestrate builds, tests, artifact packaging and promoted releases. Logs: CloudWatch. Secrets: SSM Parameter Store.
 
 ## High‑level Flow
 
@@ -18,7 +18,7 @@ BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipelin
 - Frontend: React, TypeScript, Webpack 5, Rebass v4 (@emotion theme), Redux + Sagas
 - Quality: ESLint 9 flat config, TypeScript strict-ish, Prettier (via ESLint)
 - Infra: Terraform modules (`/infrastructure` + nested modules), Bash helpers
-- CI/CD: AWS CodeBuild, CodePipeline, S3, CloudFront, Route53, CloudWatch Logs
+- CI/CD: AWS CodeBuild, CodePipeline, S3, CloudFront, Cloudflare DNS, CloudWatch Logs
 - Secrets: SSM Parameter Store (SecureString)
 
 ## Key Terraform Modules
@@ -29,15 +29,14 @@ Located under `infrastructure/modules/` (e.g. `build-pipeline`, `web-app`). Modu
 
 Naming convention:
 
-- Shared: `/shared/SECRET_NAME`
-- CodeBuild: `/codebuild/PROJECT/SECRET_NAME`
-- App: `/{PROJECT}/SECRET_NAME`
+- Repo scoped: `/buildpipeline/SECRET_NAME`
+- Environment specific: `/buildpipeline/SECRET_NAME-test` or `/buildpipeline/SECRET_NAME-prod`
 
 Basic CLI examples:
 
 ```sh
-aws ssm put-parameter --region <REGION> --name "/codebuild/PROJECT/SECRET" --value "VALUE" --type SecureString --key-id <KMS_KEY_ID>
-aws ssm get-parameters --region <REGION> --name "/codebuild/PROJECT/SECRET" --with-decryption --query 'Parameters[0].Value' --output text
+aws ssm put-parameter --region <REGION> --name "/buildpipeline/cloudflare-api-token" --value "VALUE" --type SecureString --key-id <KMS_KEY_ID>
+aws ssm get-parameters --region <REGION> --name "/buildpipeline/cloudflare-api-token" --with-decryption --query 'Parameters[0].Value' --output text
 ```
 
 ## Environments & Deployment
@@ -46,6 +45,7 @@ aws ssm get-parameters --region <REGION> --name "/codebuild/PROJECT/SECRET" --wi
 - production branch → prod after manual approval (reduces accidental releases / coordinates timing)
 - Separate buildspec + state per environment
 - Production skips build & tests: only infra apply + artifact deploy
+- First deploy in a new account/environment is run locally via `./infrastructure/bootstrap-deploy.bash <test|prod>`, after which CodeBuild takes over
 
 ## Optional Docker Builds
 

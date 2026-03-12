@@ -23,7 +23,7 @@ EOF
 }
 
 data "template_file" "codebuild_policy" {
-  template = "${file("${path.module}/codebuild-role-policy.tpl")}"
+  template = file("${path.module}/codebuild-role-policy.tpl")
 
   vars = {
     kms_key_arns       = var.kms_key_arns
@@ -122,7 +122,7 @@ EOF
 }
 
 data "template_file" "codepipeline_policy" {
-  template = "${file("${path.module}/codepipeline-role-policy.tpl")}"
+  template = file("${path.module}/codepipeline-role-policy.tpl")
 }
 
 resource "aws_iam_role_policy" "codepipeline_policy" {
@@ -133,8 +133,29 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 
 resource "aws_s3_bucket" "artifacts" {
   bucket        = "${var.name}-artifacts"
-  acl           = "private"
   force_destroy = true
+}
+
+resource "aws_s3_bucket_public_access_block" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_sns_topic" "approval" {
+  count = var.require_approval == "true" ? 1 : 0
+  name  = "${var.name}-approvals"
 }
 
 resource "aws_codepipeline" "codepipeline" {
@@ -224,7 +245,7 @@ resource "aws_codepipeline" "codepipeline_with_approval" {
       version  = "1"
 
       configuration = {
-        NotificationArn = var.approval_sns_topic_arn
+        NotificationArn = aws_sns_topic.approval[0].arn
         CustomData      = var.approval_comment
       }
     }
