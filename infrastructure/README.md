@@ -17,11 +17,13 @@ To deploy to AWS, you must:
 
 The following infrastructure components should be created manually and passed to Terraform via the appropriate variables in the appropriate buildspec declaration:
 
-- Cloudflare zone for the apex domain, with the zone ID exposed to project repos
-- Cloudflare API token with DNS edit access for the apex domain, exposed to project repos as CLOUDFLARE_API_TOKEN
+- Cloudflare zone for the apex domain
+- Cloudflare API token with DNS edit access for the apex domain, exposed to this repo as `CLOUDFLARE_API_TOKEN`
 - ACM Certificate in US East (N. Virginia) region for CloudFront
 - one buildpipeline KMS key for SecureString parameters used by this repo
 - buildpipeline SSM Parameter Store entries for the Cloudflare API token and environment-specific app secrets
+- ECR repositories and tags for the CodeBuild environment images referenced by the buildspecs
+- S3 remote state and CodeBuild cache buckets
 
 Production approval SNS topics are created by this Terraform stack. If you want email or other subscriptions, add those manually after the topic exists.
 
@@ -37,6 +39,8 @@ There is a chicken and egg situation - CodeBuild and CodePipeline will eventuall
 The bootstrap script reads the selected buildspec, exports `env.variables`, resolves `env.parameter-store` entries via AWS SSM with decryption, and runs the initial Terraform apply locally. After that first apply, CodeBuild and CodePipeline can own subsequent deploys.
 
 If your Terraform remote state bucket is in a different region from the infrastructure you are deploying, set `REMOTE_STATE_REGION` in the buildspec. If it is omitted, Terraform falls back to `TF_VAR_region`.
+
+The current demo hostnames are `buildpipeline--test.603.nz` and `buildpipeline--prod.603.nz`. The underlying S3 bucket names are account-scoped and do not need to match the public DNS names.
 
 If you want the manual path instead, exporting the environment variables specified in a buildspec declaration is tedious and time-consuming. The bash script below utilises a YAML parser called [shyaml](https://github.com/0k/shyaml) and automates the process (shyaml must be installed before using). Environment variables specified in buildspec phases or bash scripts will still need to be exported manually.
 
@@ -55,6 +59,7 @@ export $(
 ## Manually deploying infrastructure
 
 1. Update and export all environment variables specified in the appropriate buildspec declaration, including values referenced from Parameter Store
+1. Ensure the ECR image tags referenced by the selected buildspec already exist in the target account and region
 1. Initialise Terraform:
 
 ```terraform
@@ -72,6 +77,7 @@ terraform init \
 ## Manually updating infrastructure
 
 1. Update and export all environment variables specified in the appropriate buildspec declaration (check all phases) and bash scripts
+1. Ensure the selected buildspec still points at valid ECR image tags and any required secrets
 1. Make necessary infrastructure code changes.
 1. Initialise Terraform:
 

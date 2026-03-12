@@ -4,14 +4,14 @@ Test: [test env](https://buildpipeline--test.603.nz) | Prod: [production env](ht
 
 ## Overview
 
-BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipeline with separate test & production environments. The frontend (React + TypeScript + Webpack) is served from S3 behind CloudFront, with project subdomains managed in Cloudflare. Infrastructure and deployment flow are defined as code in Terraform plus a small set of Bash scripts. CodeBuild + CodePipeline orchestrate builds, tests, artifact packaging and promoted releases. Logs: CloudWatch. Secrets: SSM Parameter Store.
+BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipeline with separate test and production environments. The frontend (React + TypeScript + Webpack) is served from S3 behind CloudFront, with project subdomains managed in Cloudflare. Infrastructure and deployment flow are defined as code in Terraform plus a small set of Bash scripts. CodeBuild and CodePipeline orchestrate builds, tests, artifact packaging, and promoted releases. Logs go to CloudWatch. Only actual deployment/runtime secrets remain in SSM Parameter Store.
 
 ## High‑level Flow
 
-1. Push to master → test env pipeline: build, test, synth/apply infra, upload & deploy assets
+1. Push to master → test env pipeline: build, test, apply infra, upload and deploy assets
 2. Promote: merge master → production branch
 3. Manual approval gate in CodePipeline
-4. Production deploy: infra apply (no rebuild/tests) + asset promotion
+4. Production deploy: infra apply (no rebuild/tests) and asset promotion
 
 ## Tech Stack
 
@@ -20,6 +20,7 @@ BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipelin
 - Infra: Terraform modules (`/infrastructure` + nested modules), Bash helpers
 - CI/CD: AWS CodeBuild, CodePipeline, S3, CloudFront, Cloudflare DNS, CloudWatch Logs
 - Secrets: SSM Parameter Store (SecureString) for deployment/runtime secrets only
+- Build Images: ECR-hosted `docker-node-terraform-aws:22.x` for test and `dind-terraform-aws:v1.13.1` for prod
 
 ## Key Terraform Modules
 
@@ -31,6 +32,12 @@ Naming convention:
 
 - Repo scoped: `/buildpipeline/SECRET_NAME`
 - Environment specific: `/buildpipeline/SECRET_NAME-test` or `/buildpipeline/SECRET_NAME-prod`
+
+Current secrets used by this repo:
+
+- `/buildpipeline/cloudflare-api-token`
+- `/buildpipeline/app-secret-test`
+- `/buildpipeline/app-secret-prod`
 
 Basic CLI examples:
 
@@ -46,6 +53,7 @@ aws ssm get-parameters --region <REGION> --name "/buildpipeline/cloudflare-api-t
 - Separate buildspec + state per environment
 - Production skips build & tests: only infra apply + artifact deploy
 - First deploy in a new account/environment is run locally via `./infrastructure/bootstrap-deploy.bash <test|prod>`, after which CodeBuild takes over
+- Current demo URLs: `buildpipeline--test.603.nz` and `buildpipeline--prod.603.nz`
 
 ## Optional Docker Builds
 
