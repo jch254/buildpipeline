@@ -168,9 +168,9 @@ const HomePage: React.FC = () => (
       </Text>
       <Text fontSize={[2, 3]} lineHeight="copy" color="text">
         {window.env.DEPLOY_ENV === 'production' ? (
-          <a href="https://buildpipeline-test.603.nz">View test env</a>
+          <a href="https://buildpipeline--test.603.nz">View test env</a>
         ) : (
-          <a href="https://buildpipeline-prod.603.nz">View production env</a>
+          <a href="https://buildpipeline--prod.603.nz">View production env</a>
         )}
       </Text>
     </Box>

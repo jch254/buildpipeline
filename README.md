@@ -1,6 +1,6 @@
 # BuildPipeline
 
-Test: [test env](https://buildpipeline-test.603.nz) | Prod: [production env](https://buildpipeline-prod.603.nz)
+Test: [test env](https://buildpipeline--test.603.nz) | Prod: [production env](https://buildpipeline--prod.603.nz)
 
 ## Overview
 
