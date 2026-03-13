@@ -20,7 +20,24 @@ BuildPipeline is an AWS-backed, fully scripted build → test → deploy pipelin
 - Infra: Terraform modules (`/infrastructure` + nested modules), Bash helpers
 - CI/CD: AWS CodeBuild, CodePipeline, S3, CloudFront, Cloudflare DNS, CloudWatch Logs
 - Secrets: SSM Parameter Store (SecureString) for deployment/runtime secrets only
-- Build Images: ECR-hosted `docker-node-terraform-aws:22.x` for test and `dind-terraform-aws:v1.13.1` for prod
+- Build Images: ECR-hosted `docker-node-terraform-aws:22.x` for test and `dind-terraform-aws:v1.13.3` for prod
+
+## CodeBuild Image Guardrail
+
+Production CodeBuild in this repo runs on the standard `LINUX_CONTAINER` environment, so the configured runtime image must include `linux/amd64`. An arm64-only image will fail during the CodeBuild `PROVISIONING` phase before `buildspec-prod.yml` starts.
+
+Before changing the prod build image tag, verify the target image manifest:
+
+```sh
+./infrastructure/check-codebuild-image-platform.bash \
+	352311918919.dkr.ecr.ap-southeast-2.amazonaws.com/dind-terraform-aws:v1.13.3
+```
+
+For a private ECR image, authenticate Docker first:
+
+```sh
+aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 352311918919.dkr.ecr.ap-southeast-2.amazonaws.com
+```
 
 ## Key Terraform Modules
 
