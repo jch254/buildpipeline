@@ -11,3 +11,4 @@ stats.json
 .terraform.lock.hcl
 *.tfstate*
 *.tfplan*
+*.zip
