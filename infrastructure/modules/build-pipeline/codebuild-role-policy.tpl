@@ -9,6 +9,7 @@
       "Action": [
         "logs:*",
         "s3:*",
+        "sns:*",
         "codebuild:*",
         "codepipeline:*",
         "cloudwatch:*",
