@@ -41,7 +41,7 @@
       "Action": [
         "codestar-connections:PassConnection"
       ],
-      "Resource": ${github_connection_arn}
+      "Resource": ${github_connection_wildcard}
     }
   ]
 }

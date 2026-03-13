@@ -4,7 +4,7 @@ import { Flex } from 'rebass';
 
 interface FullscreenLoaderProps {
   delay?: number;
-  style?: any;
+  style?: React.CSSProperties;
 }
 
 const FullscreenLoader = ({ delay, style = {} }: FullscreenLoaderProps) => (
@@ -16,9 +16,5 @@ const FullscreenLoader = ({ delay, style = {} }: FullscreenLoaderProps) => (
     <Loading delay={delay} type="spinningBubbles" color="#111" />
   </Flex>
 );
-
-FullscreenLoader.defaultProps = {
-  delay: 1000,
-};
 
 export default FullscreenLoader;

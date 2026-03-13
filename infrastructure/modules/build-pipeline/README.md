@@ -32,3 +32,7 @@
 - `artifacts_bucket_id`
 - `codebuild_role_arn`
 - `codebuild_role_unique_id`
+
+## GitHub source authentication
+
+The `github_connection_arn` input should point at an AWS CodeConnections GitHub connection created with the GitHub App installation flow. Install the app for the target repository during connection setup so CodePipeline can both read the repository and receive push-trigger events.

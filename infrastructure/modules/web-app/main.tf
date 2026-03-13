@@ -31,6 +31,10 @@ resource "aws_cloudfront_origin_access_control" "apex_bucket" {
 }
 
 resource "aws_cloudfront_distribution" "cdn" {
+  lifecycle {
+    ignore_changes = [origin]
+  }
+
   origin {
     domain_name              = aws_s3_bucket.apex_bucket.bucket_regional_domain_name
     origin_id                = "apex_bucket_origin"

@@ -17,6 +17,7 @@ To deploy to AWS, you must:
 
 The following infrastructure components should be created manually and passed to Terraform via the appropriate variables in the appropriate buildspec declaration:
 
+- AWS CodeConnections GitHub connection created through the GitHub App installation flow, with the app installed for `jch254/buildpipeline`
 - Cloudflare zone for the apex domain
 - Cloudflare API token with DNS edit access for the apex domain, exposed to this repo as `CLOUDFLARE_API_TOKEN`
 - ACM Certificate in US East (N. Virginia) region for CloudFront
@@ -26,6 +27,10 @@ The following infrastructure components should be created manually and passed to
 - S3 remote state and CodeBuild cache buckets
 
 Production approval SNS topics are created by this Terraform stack. If you want email or other subscriptions, add those manually after the topic exists.
+
+## CodeConnections note
+
+When you create the GitHub connection in AWS, use the GitHub App path rather than a user-only connection. If the `App Installation` field is empty during connection creation, click `Install a new app`, install the AWS GitHub app for your GitHub account, and grant it access to the `buildpipeline` repository. Once the connection is `Available`, copy its ARN into `buildspec-test.yml` and `buildspec-prod.yml` as `TF_VAR_github_connection_arn`.
 
 ## Initial deploy
 

@@ -34,3 +34,40 @@
 :global(button:focus) {
   outline: none;
 }
+
+:global(.app-footer) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+:global(.app-footer__item) {
+  margin: 0;
+}
+
+:global(.hero-pill-row) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 760px;
+}
+
+:global(.hero-pill) {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  :global(.hero-pill-row) {
+    flex-direction: column;
+  }
+
+  :global(.hero-pill) {
+    width: 100%;
+  }
+}

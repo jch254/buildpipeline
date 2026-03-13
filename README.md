@@ -55,6 +55,10 @@ aws ssm get-parameters --region <REGION> --name "/buildpipeline/cloudflare-api-t
 - First deploy in a new account/environment is run locally via `./infrastructure/bootstrap-deploy.bash <test|prod>`, after which CodeBuild takes over
 - Current demo URLs: `buildpipeline--test.603.nz` and `buildpipeline--prod.603.nz`
 
+## GitHub Connection Setup
+
+AWS CodePipeline uses AWS CodeConnections for GitHub source access. When creating a new GitHub connection in AWS, install the GitHub app from the CodeConnections flow and grant it access to the `jch254/buildpipeline` repository. Repository access is repo-scoped, not branch-scoped, so a valid installation covers both `master` and `production`. After creating a replacement connection, update `TF_VAR_github_connection_arn` in both buildspecs and run one manual test pipeline execution so Terraform can roll the new connection ARN into the deployed pipelines.
+
 ## Optional Docker Builds
 
 If building Docker images, enable privileged mode (CodeBuild project or module variable) and start the daemon early in the buildspec:

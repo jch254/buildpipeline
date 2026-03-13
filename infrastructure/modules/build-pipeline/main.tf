@@ -4,6 +4,7 @@ resource "aws_cloudwatch_log_group" "codebuild_lg" {
 }
 
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
 resource "aws_iam_role" "codebuild_role" {
   name = "${var.name}-codebuild"
@@ -28,9 +29,9 @@ data "template_file" "codebuild_policy" {
   template = file("${path.module}/codebuild-role-policy.tpl")
 
   vars = {
-    kms_key_arns          = var.kms_key_arns
-    ssm_parameter_arns    = var.ssm_parameter_arns
-    github_connection_arn = jsonencode(var.github_connection_arn)
+    kms_key_arns               = var.kms_key_arns
+    ssm_parameter_arns         = var.ssm_parameter_arns
+    github_connection_wildcard = jsonencode("arn:aws:codeconnections:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:connection/*")
   }
 }
 
