@@ -6,8 +6,8 @@ const AppFooter: React.FC = () => (
   <Box bg="white" p={3} style={{ display: 'flex', justifyContent: 'center' }}>
     <Box className="app-footer" style={{ textAlign: 'center' }}>
       <Text className="app-footer__item" fontSize={1}>
-        <a href="https://603.nz" target="_blank" rel="noreferrer" style={{ cursor: 'pointer', color: 'black' }}>
-          {`© 603.nz ${moment().year()}`}
+        <a href="https://jch254.com" target="_blank" rel="noreferrer" style={{ cursor: 'pointer', color: 'black' }}>
+          {`© Jordan Hornblow ${moment().year()}`}
         </a>
       </Text>
       |
