@@ -8,6 +8,15 @@ import webpack from 'webpack';
 
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
+// Link previews: the card a chat app shows for a pasted link. The picture is
+// src/og.png, copied to the site root below; its address has to be absolute.
+// Production serves the build made for test, so there is one address for both.
+const siteUrl = 'https://buildpipeline--prod.603.nz';
+const title = 'BuildPipeline | 603.nz';
+const description =
+  'AWS-powered serverless build, test and deploy pipeline ft. multiple environments';
+const imageAlt = '603.nz, BuildPipeline. A scripted build, test and deploy pipeline on AWS.';
+
 const config: webpack.Configuration = {
   mode: 'production',
   entry: [path.join(__dirname, 'src', 'index.tsx')],
@@ -39,6 +48,7 @@ const config: webpack.Configuration = {
           `;
           },
         },
+        { from: path.join(__dirname, 'src', 'og.png'), to: 'og.png' },
       ],
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
@@ -47,12 +57,24 @@ const config: webpack.Configuration = {
       ignoreOrder: true,
     }),
     new HtmlWebpackPlugin({
-      title: 'BuildPipeline | 603.nz',
+      title,
       template: path.join(__dirname, 'src', 'index.ejs'),
       favicon: path.join(__dirname, 'src', 'favicon.ico'),
       meta: {
-        description:
-          'AWS-powered serverless build, test and deploy pipeline ft. multiple environments',
+        description,
+        'og:type': { property: 'og:type', content: 'website' },
+        'og:site_name': { property: 'og:site_name', content: '603.nz' },
+        'og:url': { property: 'og:url', content: `${siteUrl}/` },
+        'og:title': { property: 'og:title', content: title },
+        'og:description': { property: 'og:description', content: description },
+        'og:image': { property: 'og:image', content: `${siteUrl}/og.png` },
+        'og:image:width': { property: 'og:image:width', content: '1200' },
+        'og:image:height': { property: 'og:image:height', content: '630' },
+        'og:image:alt': { property: 'og:image:alt', content: imageAlt },
+        'twitter:card': 'summary_large_image',
+        'twitter:title': title,
+        'twitter:description': description,
+        'twitter:image': `${siteUrl}/og.png`,
       },
       minify: {
         collapseWhitespace: true,
